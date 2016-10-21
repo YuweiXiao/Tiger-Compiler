@@ -2,9 +2,10 @@
 #include <string.h>
 #include "util.h"
 #include "symbol.h"
-#include "absyn.h"
-#include "y.tab.h"
 #include "errormsg.h"
+#include "absyn.h"
+#include "prabsyn.h"
+#include "y.tab.h"
 
 int charPos=1;
 int startComment = 0;
@@ -77,12 +78,19 @@ digits [0-9]+
 <INITINAL>"&"  {adjust(); return AND;}
 <INITINAL>"|"  {adjust(); return OR;}
 <INITINAL>":="  {adjust(); return ASSIGN;}
-<INITINAL>[a-zA-Z]["_"|a-zA-Z0-9]*  {adjust(); yylval.sval = yytext; return ID;} // identifier
+<INITINAL>[a-zA-Z]["_"|a-zA-Z0-9]* {// identifier
+  adjust(); 
+  int size = strlen(yytext);
+  yylval.sval = checked_malloc(sizeof(char)*size);
+  strcpy(yylval.sval, yytext);
+  return ID;
+} 
 <INITINAL>"\""([a-zA-Z0-9]|"/"|" "|"\\n"|"."|"_"|"-"|"\\t")*"\"" {// string
   adjust(); 
   int size = strlen(yytext), i, p = 0;
   if(size == 2) {
-    yylval.sval = "(null)";
+    yylval.sval = "";
+    // yylval.sval = "(null)";
     return STRING;
   }
   yylval.sval = checked_malloc(sizeof(char)*size);
@@ -101,7 +109,7 @@ digits [0-9]+
     }
     p++;
   }
-  // printf("string:strlen:%s\n", yylval.sval);
+  yylval.sval[p] = '\0';
   return STRING;
 }       
 <INITINAL>{digits}   {adjust(); yylval.ival=atoi(yytext); return INT;}
