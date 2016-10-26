@@ -193,7 +193,7 @@ arithmeticExp : exp PLUS exp {$$ = A_OpExp(EM_tokPos, A_plusOp, $1, $3);}
 
 /* declarations */
 
-declist : dec %prec LOWEST {$$ = A_DecList($1, NULL);}
+declist :  %prec LOWEST {$$ = NULL;}
         | dec declist {$$ = A_DecList($1, $2);}
 
 dec : tydeclist {$$ = A_TypeDec(EM_tokPos, $1);}
