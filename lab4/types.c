@@ -36,6 +36,13 @@ Ty_ty Ty_Array(Ty_ty ty)
  return p;
 }
 
+Ty_ty Ty_LoopVar(Ty_ty ty)
+{Ty_ty p = checked_malloc(sizeof(*p));
+ p->kind=Ty_loopVar;
+ p->u.loopTy=ty;
+ return p;
+}
+
 Ty_ty Ty_Name(S_symbol sym, Ty_ty ty)
 {Ty_ty p = checked_malloc(sizeof(*p));
  p->kind=Ty_name;
