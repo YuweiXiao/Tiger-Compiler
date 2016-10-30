@@ -33,7 +33,7 @@ S_table E_base_venv(void) {
   S_enter(env, S_Symbol("print"), 
             E_FunEntry(
                 Ty_TyList(Ty_String(), NULL), 
-                Ty_Nil())
+                Ty_Void())
           );
   S_enter(env, S_Symbol("ord"), 
             E_FunEntry(
@@ -42,8 +42,8 @@ S_table E_base_venv(void) {
           );
   S_enter(env, S_Symbol("chr"), 
             E_FunEntry(
-                Ty_TyList(Ty_String(), NULL), 
-                Ty_Int())
+                Ty_TyList(Ty_Int(), NULL), 
+                Ty_String())
           );
   S_enter(env, S_Symbol("getchar"), 
             E_FunEntry(

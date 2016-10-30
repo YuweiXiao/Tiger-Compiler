@@ -154,7 +154,7 @@ nilExp : NIL {$$ = A_NilExp(EM_tokPos);}
 
 /* if expression*/
 ifExp : IF exp THEN exp ELSE exp  {$$ = A_IfExp(EM_tokPos, $2, $4, $6);}
-      | IF exp THEN exp           {$$ = A_IfExp(EM_tokPos, $2, $4, A_NilExp(EM_tokPos));}
+      | IF exp THEN exp           {$$ = A_IfExp(EM_tokPos, $2, $4, NULL);}
 
 
 /* function call expression*/
