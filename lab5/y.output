@@ -1,0 +1,3099 @@
+Terminals unused in grammar
+
+   BREAK
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: exp
+
+    2 exp: lvalueExp
+    3    | nilExp
+    4    | seqExp
+    5    | literalExp
+    6    | funcCallExp
+    7    | arithmeticExp
+    8    | comparisonExp
+    9    | booleanExp
+   10    | letExp
+   11    | loopExp
+   12    | ifExp
+   13    | arrayExp
+   14    | recordExp
+   15    | assignExp
+
+   16 arrayExp: ID LBRACK exp RBRACK OF exp
+
+   17 recordExp: ID LBRACE efiledlist RBRACE
+
+   18 efield: ID EQ exp
+
+   19 efiledlist: %empty
+   20           | efield
+   21           | efield COMMA efiledlist
+
+   22 lvalueExp: lvalue
+
+   23 lvalue: ID
+   24       | lvalue DOT ID
+   25       | lvalue LBRACK exp RBRACK
+   26       | ID LBRACK exp RBRACK
+
+   27 assignExp: lvalue ASSIGN exp
+
+   28 loopExp: FOR ID ASSIGN exp TO exp DO exp
+   29        | WHILE exp DO exp
+
+   30 letExp: LET declist IN seqExpList END
+
+   31 literalExp: INT
+   32           | STRING
+
+   33 nilExp: NIL
+
+   34 ifExp: IF exp THEN exp ELSE exp
+   35      | IF exp THEN exp
+
+   36 funcCallExp: ID LPAREN argList RPAREN
+
+   37 argList: %empty
+   38        | exp
+   39        | exp COMMA argList
+
+   40 seqExp: LPAREN seqExpList RPAREN
+
+   41 seqExpList: %empty
+   42           | exp
+   43           | exp SEMICOLON seqExpList
+
+   44 booleanExp: exp AND exp
+   45           | exp OR exp
+
+   46 comparisonExp: exp EQ exp
+   47              | exp NEQ exp
+   48              | exp GT exp
+   49              | exp GE exp
+   50              | exp LE exp
+   51              | exp LT exp
+
+   52 arithmeticExp: exp PLUS exp
+   53              | exp MINUS exp
+   54              | exp TIMES exp
+   55              | exp DIVIDE exp
+   56              | MINUS exp
+
+   57 declist: %empty
+   58        | dec declist
+
+   59 dec: tydeclist
+   60    | vardec
+   61    | fundeclist
+
+   62 fundec: FUNCTION ID LPAREN tyfieldlist RPAREN EQ exp
+   63       | FUNCTION ID LPAREN tyfieldlist RPAREN COLON ID EQ exp
+
+   64 fundeclist: fundec
+   65           | fundec fundeclist
+
+   66 vardec: VAR ID ASSIGN exp
+   67       | VAR ID COLON ID ASSIGN exp
+
+   68 tydec: TYPE ID EQ ty
+
+   69 tydeclist: tydec
+   70          | tydec tydeclist
+
+   71 ty: ID
+   72   | LBRACE tyfieldlist RBRACE
+   73   | ARRAY OF ID
+
+   74 tyfield: ID COLON ID
+
+   75 tyfieldlist: %empty
+   76            | tyfield
+   77            | tyfield COMMA tyfieldlist
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+ID (258) 16 17 18 23 24 26 28 36 62 63 66 67 68 71 73 74
+STRING (259) 32
+INT (260) 31
+COMMA (261) 21 39 77
+COLON (262) 63 67 74
+SEMICOLON (263) 43
+LPAREN (264) 36 40 62 63
+RPAREN (265) 36 40 62 63
+LBRACK (266) 16 25 26
+RBRACK (267) 16 25 26
+LBRACE (268) 17 72
+RBRACE (269) 17 72
+DOT (270) 24
+PLUS (271) 52
+MINUS (272) 53 56
+TIMES (273) 54
+DIVIDE (274) 55
+EQ (275) 18 46 62 63 68
+NEQ (276) 47
+LT (277) 51
+LE (278) 50
+GT (279) 48
+GE (280) 49
+AND (281) 44
+OR (282) 45
+ASSIGN (283) 27 28 66 67
+ARRAY (284) 73
+IF (285) 34 35
+THEN (286) 34 35
+ELSE (287) 34
+WHILE (288) 29
+FOR (289) 28
+TO (290) 28
+DO (291) 28 29
+LET (292) 30
+IN (293) 30
+END (294) 30
+OF (295) 16 73
+BREAK (296)
+NIL (297) 33
+FUNCTION (298) 62 63
+VAR (299) 66 67
+TYPE (300) 68
+LOWEST (301)
+UMINUS (302)
+
+
+Nonterminals, with rules where they appear
+
+$accept (48)
+    on left: 0
+program (49)
+    on left: 1, on right: 0
+exp (50)
+    on left: 2 3 4 5 6 7 8 9 10 11 12 13 14 15, on right: 1 16 18 25
+    26 27 28 29 34 35 38 39 42 43 44 45 46 47 48 49 50 51 52 53 54
+    55 56 62 63 66 67
+arrayExp (51)
+    on left: 16, on right: 13
+recordExp (52)
+    on left: 17, on right: 14
+efield (53)
+    on left: 18, on right: 20 21
+efiledlist (54)
+    on left: 19 20 21, on right: 17 21
+lvalueExp (55)
+    on left: 22, on right: 2
+lvalue (56)
+    on left: 23 24 25 26, on right: 22 24 25 27
+assignExp (57)
+    on left: 27, on right: 15
+loopExp (58)
+    on left: 28 29, on right: 11
+letExp (59)
+    on left: 30, on right: 10
+literalExp (60)
+    on left: 31 32, on right: 5
+nilExp (61)
+    on left: 33, on right: 3
+ifExp (62)
+    on left: 34 35, on right: 12
+funcCallExp (63)
+    on left: 36, on right: 6
+argList (64)
+    on left: 37 38 39, on right: 36 39
+seqExp (65)
+    on left: 40, on right: 4
+seqExpList (66)
+    on left: 41 42 43, on right: 30 40 43
+booleanExp (67)
+    on left: 44 45, on right: 9
+comparisonExp (68)
+    on left: 46 47 48 49 50 51, on right: 8
+arithmeticExp (69)
+    on left: 52 53 54 55 56, on right: 7
+declist (70)
+    on left: 57 58, on right: 30 58
+dec (71)
+    on left: 59 60 61, on right: 58
+fundec (72)
+    on left: 62 63, on right: 64 65
+fundeclist (73)
+    on left: 64 65, on right: 61 65
+vardec (74)
+    on left: 66 67, on right: 60
+tydec (75)
+    on left: 68, on right: 69 70
+tydeclist (76)
+    on left: 69 70, on right: 59 70
+ty (77)
+    on left: 71 72 73, on right: 68
+tyfield (78)
+    on left: 74, on right: 76 77
+tyfieldlist (79)
+    on left: 75 76 77, on right: 62 63 72 77
+
+
+State 0
+
+    0 $accept: . program $end
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    program        go to state 11
+    exp            go to state 12
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 1
+
+   16 arrayExp: ID . LBRACK exp RBRACK OF exp
+   17 recordExp: ID . LBRACE efiledlist RBRACE
+   23 lvalue: ID .
+   26       | ID . LBRACK exp RBRACK
+   36 funcCallExp: ID . LPAREN argList RPAREN
+
+    LPAREN  shift, and go to state 28
+    LBRACK  shift, and go to state 29
+    LBRACE  shift, and go to state 30
+
+    $default  reduce using rule 23 (lvalue)
+
+
+State 2
+
+   32 literalExp: STRING .
+
+    $default  reduce using rule 32 (literalExp)
+
+
+State 3
+
+   31 literalExp: INT .
+
+    $default  reduce using rule 31 (literalExp)
+
+
+State 4
+
+   40 seqExp: LPAREN . seqExpList RPAREN
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 41 (seqExpList)
+
+    exp            go to state 31
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    seqExpList     go to state 32
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 5
+
+   56 arithmeticExp: MINUS . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 33
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 6
+
+   34 ifExp: IF . exp THEN exp ELSE exp
+   35      | IF . exp THEN exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 34
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 7
+
+   29 loopExp: WHILE . exp DO exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 35
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 8
+
+   28 loopExp: FOR . ID ASSIGN exp TO exp DO exp
+
+    ID  shift, and go to state 36
+
+
+State 9
+
+   30 letExp: LET . declist IN seqExpList END
+
+    FUNCTION  shift, and go to state 37
+    VAR       shift, and go to state 38
+    TYPE      shift, and go to state 39
+
+    $default  reduce using rule 57 (declist)
+
+    declist     go to state 40
+    dec         go to state 41
+    fundec      go to state 42
+    fundeclist  go to state 43
+    vardec      go to state 44
+    tydec       go to state 45
+    tydeclist   go to state 46
+
+
+State 10
+
+   33 nilExp: NIL .
+
+    $default  reduce using rule 33 (nilExp)
+
+
+State 11
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 47
+
+
+State 12
+
+    1 program: exp .
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+
+    $default  reduce using rule 1 (program)
+
+
+State 13
+
+   13 exp: arrayExp .
+
+    $default  reduce using rule 13 (exp)
+
+
+State 14
+
+   14 exp: recordExp .
+
+    $default  reduce using rule 14 (exp)
+
+
+State 15
+
+    2 exp: lvalueExp .
+
+    $default  reduce using rule 2 (exp)
+
+
+State 16
+
+   22 lvalueExp: lvalue .
+   24 lvalue: lvalue . DOT ID
+   25       | lvalue . LBRACK exp RBRACK
+   27 assignExp: lvalue . ASSIGN exp
+
+    LBRACK  shift, and go to state 60
+    DOT     shift, and go to state 61
+    ASSIGN  shift, and go to state 62
+
+    $default  reduce using rule 22 (lvalueExp)
+
+
+State 17
+
+   15 exp: assignExp .
+
+    $default  reduce using rule 15 (exp)
+
+
+State 18
+
+   11 exp: loopExp .
+
+    $default  reduce using rule 11 (exp)
+
+
+State 19
+
+   10 exp: letExp .
+
+    $default  reduce using rule 10 (exp)
+
+
+State 20
+
+    5 exp: literalExp .
+
+    $default  reduce using rule 5 (exp)
+
+
+State 21
+
+    3 exp: nilExp .
+
+    $default  reduce using rule 3 (exp)
+
+
+State 22
+
+   12 exp: ifExp .
+
+    $default  reduce using rule 12 (exp)
+
+
+State 23
+
+    6 exp: funcCallExp .
+
+    $default  reduce using rule 6 (exp)
+
+
+State 24
+
+    4 exp: seqExp .
+
+    $default  reduce using rule 4 (exp)
+
+
+State 25
+
+    9 exp: booleanExp .
+
+    $default  reduce using rule 9 (exp)
+
+
+State 26
+
+    8 exp: comparisonExp .
+
+    $default  reduce using rule 8 (exp)
+
+
+State 27
+
+    7 exp: arithmeticExp .
+
+    $default  reduce using rule 7 (exp)
+
+
+State 28
+
+   36 funcCallExp: ID LPAREN . argList RPAREN
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 37 (argList)
+
+    exp            go to state 63
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    argList        go to state 64
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 29
+
+   16 arrayExp: ID LBRACK . exp RBRACK OF exp
+   26 lvalue: ID LBRACK . exp RBRACK
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 65
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 30
+
+   17 recordExp: ID LBRACE . efiledlist RBRACE
+
+    ID  shift, and go to state 66
+
+    $default  reduce using rule 19 (efiledlist)
+
+    efield      go to state 67
+    efiledlist  go to state 68
+
+
+State 31
+
+   42 seqExpList: exp .
+   43           | exp . SEMICOLON seqExpList
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    SEMICOLON  shift, and go to state 69
+    PLUS       shift, and go to state 48
+    MINUS      shift, and go to state 49
+    TIMES      shift, and go to state 50
+    DIVIDE     shift, and go to state 51
+    EQ         shift, and go to state 52
+    NEQ        shift, and go to state 53
+    LT         shift, and go to state 54
+    LE         shift, and go to state 55
+    GT         shift, and go to state 56
+    GE         shift, and go to state 57
+    AND        shift, and go to state 58
+    OR         shift, and go to state 59
+
+    $default  reduce using rule 42 (seqExpList)
+
+
+State 32
+
+   40 seqExp: LPAREN seqExpList . RPAREN
+
+    RPAREN  shift, and go to state 70
+
+
+State 33
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+   56              | MINUS exp .
+
+    $default  reduce using rule 56 (arithmeticExp)
+
+
+State 34
+
+   34 ifExp: IF exp . THEN exp ELSE exp
+   35      | IF exp . THEN exp
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+    THEN    shift, and go to state 71
+
+
+State 35
+
+   29 loopExp: WHILE exp . DO exp
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+    DO      shift, and go to state 72
+
+
+State 36
+
+   28 loopExp: FOR ID . ASSIGN exp TO exp DO exp
+
+    ASSIGN  shift, and go to state 73
+
+
+State 37
+
+   62 fundec: FUNCTION . ID LPAREN tyfieldlist RPAREN EQ exp
+   63       | FUNCTION . ID LPAREN tyfieldlist RPAREN COLON ID EQ exp
+
+    ID  shift, and go to state 74
+
+
+State 38
+
+   66 vardec: VAR . ID ASSIGN exp
+   67       | VAR . ID COLON ID ASSIGN exp
+
+    ID  shift, and go to state 75
+
+
+State 39
+
+   68 tydec: TYPE . ID EQ ty
+
+    ID  shift, and go to state 76
+
+
+State 40
+
+   30 letExp: LET declist . IN seqExpList END
+
+    IN  shift, and go to state 77
+
+
+State 41
+
+   58 declist: dec . declist
+
+    FUNCTION  shift, and go to state 37
+    VAR       shift, and go to state 38
+    TYPE      shift, and go to state 39
+
+    $default  reduce using rule 57 (declist)
+
+    declist     go to state 78
+    dec         go to state 41
+    fundec      go to state 42
+    fundeclist  go to state 43
+    vardec      go to state 44
+    tydec       go to state 45
+    tydeclist   go to state 46
+
+
+State 42
+
+   64 fundeclist: fundec .
+   65           | fundec . fundeclist
+
+    FUNCTION  shift, and go to state 37
+
+    $default  reduce using rule 64 (fundeclist)
+
+    fundec      go to state 42
+    fundeclist  go to state 79
+
+
+State 43
+
+   61 dec: fundeclist .
+
+    $default  reduce using rule 61 (dec)
+
+
+State 44
+
+   60 dec: vardec .
+
+    $default  reduce using rule 60 (dec)
+
+
+State 45
+
+   69 tydeclist: tydec .
+   70          | tydec . tydeclist
+
+    TYPE  shift, and go to state 39
+
+    $default  reduce using rule 69 (tydeclist)
+
+    tydec      go to state 45
+    tydeclist  go to state 80
+
+
+State 46
+
+   59 dec: tydeclist .
+
+    $default  reduce using rule 59 (dec)
+
+
+State 47
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 48
+
+   52 arithmeticExp: exp PLUS . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 81
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 49
+
+   53 arithmeticExp: exp MINUS . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 82
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 50
+
+   54 arithmeticExp: exp TIMES . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 83
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 51
+
+   55 arithmeticExp: exp DIVIDE . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 84
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 52
+
+   46 comparisonExp: exp EQ . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 85
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 53
+
+   47 comparisonExp: exp NEQ . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 86
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 54
+
+   51 comparisonExp: exp LT . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 87
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 55
+
+   50 comparisonExp: exp LE . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 88
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 56
+
+   48 comparisonExp: exp GT . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 89
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 57
+
+   49 comparisonExp: exp GE . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 90
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 58
+
+   44 booleanExp: exp AND . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 91
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 59
+
+   45 booleanExp: exp OR . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 92
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 60
+
+   25 lvalue: lvalue LBRACK . exp RBRACK
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 93
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 61
+
+   24 lvalue: lvalue DOT . ID
+
+    ID  shift, and go to state 94
+
+
+State 62
+
+   27 assignExp: lvalue ASSIGN . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 95
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 63
+
+   38 argList: exp .
+   39        | exp . COMMA argList
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    COMMA   shift, and go to state 96
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+
+    $default  reduce using rule 38 (argList)
+
+
+State 64
+
+   36 funcCallExp: ID LPAREN argList . RPAREN
+
+    RPAREN  shift, and go to state 97
+
+
+State 65
+
+   16 arrayExp: ID LBRACK exp . RBRACK OF exp
+   26 lvalue: ID LBRACK exp . RBRACK
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    RBRACK  shift, and go to state 98
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+
+
+State 66
+
+   18 efield: ID . EQ exp
+
+    EQ  shift, and go to state 99
+
+
+State 67
+
+   20 efiledlist: efield .
+   21           | efield . COMMA efiledlist
+
+    COMMA  shift, and go to state 100
+
+    $default  reduce using rule 20 (efiledlist)
+
+
+State 68
+
+   17 recordExp: ID LBRACE efiledlist . RBRACE
+
+    RBRACE  shift, and go to state 101
+
+
+State 69
+
+   43 seqExpList: exp SEMICOLON . seqExpList
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 41 (seqExpList)
+
+    exp            go to state 31
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    seqExpList     go to state 102
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 70
+
+   40 seqExp: LPAREN seqExpList RPAREN .
+
+    $default  reduce using rule 40 (seqExp)
+
+
+State 71
+
+   34 ifExp: IF exp THEN . exp ELSE exp
+   35      | IF exp THEN . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 103
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 72
+
+   29 loopExp: WHILE exp DO . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 104
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 73
+
+   28 loopExp: FOR ID ASSIGN . exp TO exp DO exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 105
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 74
+
+   62 fundec: FUNCTION ID . LPAREN tyfieldlist RPAREN EQ exp
+   63       | FUNCTION ID . LPAREN tyfieldlist RPAREN COLON ID EQ exp
+
+    LPAREN  shift, and go to state 106
+
+
+State 75
+
+   66 vardec: VAR ID . ASSIGN exp
+   67       | VAR ID . COLON ID ASSIGN exp
+
+    COLON   shift, and go to state 107
+    ASSIGN  shift, and go to state 108
+
+
+State 76
+
+   68 tydec: TYPE ID . EQ ty
+
+    EQ  shift, and go to state 109
+
+
+State 77
+
+   30 letExp: LET declist IN . seqExpList END
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 41 (seqExpList)
+
+    exp            go to state 31
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    seqExpList     go to state 110
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 78
+
+   58 declist: dec declist .
+
+    $default  reduce using rule 58 (declist)
+
+
+State 79
+
+   65 fundeclist: fundec fundeclist .
+
+    $default  reduce using rule 65 (fundeclist)
+
+
+State 80
+
+   70 tydeclist: tydec tydeclist .
+
+    $default  reduce using rule 70 (tydeclist)
+
+
+State 81
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   52              | exp PLUS exp .
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+
+    $default  reduce using rule 52 (arithmeticExp)
+
+
+State 82
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   53              | exp MINUS exp .
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+
+    $default  reduce using rule 53 (arithmeticExp)
+
+
+State 83
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   54              | exp TIMES exp .
+   55              | exp . DIVIDE exp
+
+    $default  reduce using rule 54 (arithmeticExp)
+
+
+State 84
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+   55              | exp DIVIDE exp .
+
+    $default  reduce using rule 55 (arithmeticExp)
+
+
+State 85
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   46              | exp EQ exp .
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+
+    EQ   error (nonassociative)
+    NEQ  error (nonassociative)
+    LT   error (nonassociative)
+    LE   error (nonassociative)
+    GT   error (nonassociative)
+    GE   error (nonassociative)
+
+    $default  reduce using rule 46 (comparisonExp)
+
+
+State 86
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   47              | exp NEQ exp .
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+
+    EQ   error (nonassociative)
+    NEQ  error (nonassociative)
+    LT   error (nonassociative)
+    LE   error (nonassociative)
+    GT   error (nonassociative)
+    GE   error (nonassociative)
+
+    $default  reduce using rule 47 (comparisonExp)
+
+
+State 87
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   51              | exp LT exp .
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+
+    EQ   error (nonassociative)
+    NEQ  error (nonassociative)
+    LT   error (nonassociative)
+    LE   error (nonassociative)
+    GT   error (nonassociative)
+    GE   error (nonassociative)
+
+    $default  reduce using rule 51 (comparisonExp)
+
+
+State 88
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   50              | exp LE exp .
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+
+    EQ   error (nonassociative)
+    NEQ  error (nonassociative)
+    LT   error (nonassociative)
+    LE   error (nonassociative)
+    GT   error (nonassociative)
+    GE   error (nonassociative)
+
+    $default  reduce using rule 50 (comparisonExp)
+
+
+State 89
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   48              | exp GT exp .
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+
+    EQ   error (nonassociative)
+    NEQ  error (nonassociative)
+    LT   error (nonassociative)
+    LE   error (nonassociative)
+    GT   error (nonassociative)
+    GE   error (nonassociative)
+
+    $default  reduce using rule 48 (comparisonExp)
+
+
+State 90
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   49              | exp GE exp .
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+
+    EQ   error (nonassociative)
+    NEQ  error (nonassociative)
+    LT   error (nonassociative)
+    LE   error (nonassociative)
+    GT   error (nonassociative)
+    GE   error (nonassociative)
+
+    $default  reduce using rule 49 (comparisonExp)
+
+
+State 91
+
+   44 booleanExp: exp . AND exp
+   44           | exp AND exp .
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+
+    $default  reduce using rule 44 (booleanExp)
+
+
+State 92
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   45           | exp OR exp .
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+
+    $default  reduce using rule 45 (booleanExp)
+
+
+State 93
+
+   25 lvalue: lvalue LBRACK exp . RBRACK
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    RBRACK  shift, and go to state 111
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+
+
+State 94
+
+   24 lvalue: lvalue DOT ID .
+
+    $default  reduce using rule 24 (lvalue)
+
+
+State 95
+
+   27 assignExp: lvalue ASSIGN exp .
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+
+    $default  reduce using rule 27 (assignExp)
+
+
+State 96
+
+   39 argList: exp COMMA . argList
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    $default  reduce using rule 37 (argList)
+
+    exp            go to state 63
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    argList        go to state 112
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 97
+
+   36 funcCallExp: ID LPAREN argList RPAREN .
+
+    $default  reduce using rule 36 (funcCallExp)
+
+
+State 98
+
+   16 arrayExp: ID LBRACK exp RBRACK . OF exp
+   26 lvalue: ID LBRACK exp RBRACK .
+
+    OF  shift, and go to state 113
+
+    $default  reduce using rule 26 (lvalue)
+
+
+State 99
+
+   18 efield: ID EQ . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 114
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 100
+
+   21 efiledlist: efield COMMA . efiledlist
+
+    ID  shift, and go to state 66
+
+    $default  reduce using rule 19 (efiledlist)
+
+    efield      go to state 67
+    efiledlist  go to state 115
+
+
+State 101
+
+   17 recordExp: ID LBRACE efiledlist RBRACE .
+
+    $default  reduce using rule 17 (recordExp)
+
+
+State 102
+
+   43 seqExpList: exp SEMICOLON seqExpList .
+
+    $default  reduce using rule 43 (seqExpList)
+
+
+State 103
+
+   34 ifExp: IF exp THEN exp . ELSE exp
+   35      | IF exp THEN exp .
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+    ELSE    shift, and go to state 116
+
+    $default  reduce using rule 35 (ifExp)
+
+
+State 104
+
+   29 loopExp: WHILE exp DO exp .
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+
+    $default  reduce using rule 29 (loopExp)
+
+
+State 105
+
+   28 loopExp: FOR ID ASSIGN exp . TO exp DO exp
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+    TO      shift, and go to state 117
+
+
+State 106
+
+   62 fundec: FUNCTION ID LPAREN . tyfieldlist RPAREN EQ exp
+   63       | FUNCTION ID LPAREN . tyfieldlist RPAREN COLON ID EQ exp
+
+    ID  shift, and go to state 118
+
+    $default  reduce using rule 75 (tyfieldlist)
+
+    tyfield      go to state 119
+    tyfieldlist  go to state 120
+
+
+State 107
+
+   67 vardec: VAR ID COLON . ID ASSIGN exp
+
+    ID  shift, and go to state 121
+
+
+State 108
+
+   66 vardec: VAR ID ASSIGN . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 122
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 109
+
+   68 tydec: TYPE ID EQ . ty
+
+    ID      shift, and go to state 123
+    LBRACE  shift, and go to state 124
+    ARRAY   shift, and go to state 125
+
+    ty  go to state 126
+
+
+State 110
+
+   30 letExp: LET declist IN seqExpList . END
+
+    END  shift, and go to state 127
+
+
+State 111
+
+   25 lvalue: lvalue LBRACK exp RBRACK .
+
+    $default  reduce using rule 25 (lvalue)
+
+
+State 112
+
+   39 argList: exp COMMA argList .
+
+    $default  reduce using rule 39 (argList)
+
+
+State 113
+
+   16 arrayExp: ID LBRACK exp RBRACK OF . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 128
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 114
+
+   18 efield: ID EQ exp .
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+
+    $default  reduce using rule 18 (efield)
+
+
+State 115
+
+   21 efiledlist: efield COMMA efiledlist .
+
+    $default  reduce using rule 21 (efiledlist)
+
+
+State 116
+
+   34 ifExp: IF exp THEN exp ELSE . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 129
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 117
+
+   28 loopExp: FOR ID ASSIGN exp TO . exp DO exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 130
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 118
+
+   74 tyfield: ID . COLON ID
+
+    COLON  shift, and go to state 131
+
+
+State 119
+
+   76 tyfieldlist: tyfield .
+   77            | tyfield . COMMA tyfieldlist
+
+    COMMA  shift, and go to state 132
+
+    $default  reduce using rule 76 (tyfieldlist)
+
+
+State 120
+
+   62 fundec: FUNCTION ID LPAREN tyfieldlist . RPAREN EQ exp
+   63       | FUNCTION ID LPAREN tyfieldlist . RPAREN COLON ID EQ exp
+
+    RPAREN  shift, and go to state 133
+
+
+State 121
+
+   67 vardec: VAR ID COLON ID . ASSIGN exp
+
+    ASSIGN  shift, and go to state 134
+
+
+State 122
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+   66 vardec: VAR ID ASSIGN exp .
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+
+    $default  reduce using rule 66 (vardec)
+
+
+State 123
+
+   71 ty: ID .
+
+    $default  reduce using rule 71 (ty)
+
+
+State 124
+
+   72 ty: LBRACE . tyfieldlist RBRACE
+
+    ID  shift, and go to state 118
+
+    $default  reduce using rule 75 (tyfieldlist)
+
+    tyfield      go to state 119
+    tyfieldlist  go to state 135
+
+
+State 125
+
+   73 ty: ARRAY . OF ID
+
+    OF  shift, and go to state 136
+
+
+State 126
+
+   68 tydec: TYPE ID EQ ty .
+
+    $default  reduce using rule 68 (tydec)
+
+
+State 127
+
+   30 letExp: LET declist IN seqExpList END .
+
+    $default  reduce using rule 30 (letExp)
+
+
+State 128
+
+   16 arrayExp: ID LBRACK exp RBRACK OF exp .
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+
+    $default  reduce using rule 16 (arrayExp)
+
+
+State 129
+
+   34 ifExp: IF exp THEN exp ELSE exp .
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+
+    $default  reduce using rule 34 (ifExp)
+
+
+State 130
+
+   28 loopExp: FOR ID ASSIGN exp TO exp . DO exp
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+    DO      shift, and go to state 137
+
+
+State 131
+
+   74 tyfield: ID COLON . ID
+
+    ID  shift, and go to state 138
+
+
+State 132
+
+   77 tyfieldlist: tyfield COMMA . tyfieldlist
+
+    ID  shift, and go to state 118
+
+    $default  reduce using rule 75 (tyfieldlist)
+
+    tyfield      go to state 119
+    tyfieldlist  go to state 139
+
+
+State 133
+
+   62 fundec: FUNCTION ID LPAREN tyfieldlist RPAREN . EQ exp
+   63       | FUNCTION ID LPAREN tyfieldlist RPAREN . COLON ID EQ exp
+
+    COLON  shift, and go to state 140
+    EQ     shift, and go to state 141
+
+
+State 134
+
+   67 vardec: VAR ID COLON ID ASSIGN . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 142
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 135
+
+   72 ty: LBRACE tyfieldlist . RBRACE
+
+    RBRACE  shift, and go to state 143
+
+
+State 136
+
+   73 ty: ARRAY OF . ID
+
+    ID  shift, and go to state 144
+
+
+State 137
+
+   28 loopExp: FOR ID ASSIGN exp TO exp DO . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 145
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 138
+
+   74 tyfield: ID COLON ID .
+
+    $default  reduce using rule 74 (tyfield)
+
+
+State 139
+
+   77 tyfieldlist: tyfield COMMA tyfieldlist .
+
+    $default  reduce using rule 77 (tyfieldlist)
+
+
+State 140
+
+   63 fundec: FUNCTION ID LPAREN tyfieldlist RPAREN COLON . ID EQ exp
+
+    ID  shift, and go to state 146
+
+
+State 141
+
+   62 fundec: FUNCTION ID LPAREN tyfieldlist RPAREN EQ . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 147
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 142
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+   67 vardec: VAR ID COLON ID ASSIGN exp .
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+
+    $default  reduce using rule 67 (vardec)
+
+
+State 143
+
+   72 ty: LBRACE tyfieldlist RBRACE .
+
+    $default  reduce using rule 72 (ty)
+
+
+State 144
+
+   73 ty: ARRAY OF ID .
+
+    $default  reduce using rule 73 (ty)
+
+
+State 145
+
+   28 loopExp: FOR ID ASSIGN exp TO exp DO exp .
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+
+    $default  reduce using rule 28 (loopExp)
+
+
+State 146
+
+   63 fundec: FUNCTION ID LPAREN tyfieldlist RPAREN COLON ID . EQ exp
+
+    EQ  shift, and go to state 148
+
+
+State 147
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+   62 fundec: FUNCTION ID LPAREN tyfieldlist RPAREN EQ exp .
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+
+    $default  reduce using rule 62 (fundec)
+
+
+State 148
+
+   63 fundec: FUNCTION ID LPAREN tyfieldlist RPAREN COLON ID EQ . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    NIL     shift, and go to state 10
+
+    exp            go to state 149
+    arrayExp       go to state 13
+    recordExp      go to state 14
+    lvalueExp      go to state 15
+    lvalue         go to state 16
+    assignExp      go to state 17
+    loopExp        go to state 18
+    letExp         go to state 19
+    literalExp     go to state 20
+    nilExp         go to state 21
+    ifExp          go to state 22
+    funcCallExp    go to state 23
+    seqExp         go to state 24
+    booleanExp     go to state 25
+    comparisonExp  go to state 26
+    arithmeticExp  go to state 27
+
+
+State 149
+
+   44 booleanExp: exp . AND exp
+   45           | exp . OR exp
+   46 comparisonExp: exp . EQ exp
+   47              | exp . NEQ exp
+   48              | exp . GT exp
+   49              | exp . GE exp
+   50              | exp . LE exp
+   51              | exp . LT exp
+   52 arithmeticExp: exp . PLUS exp
+   53              | exp . MINUS exp
+   54              | exp . TIMES exp
+   55              | exp . DIVIDE exp
+   63 fundec: FUNCTION ID LPAREN tyfieldlist RPAREN COLON ID EQ exp .
+
+    PLUS    shift, and go to state 48
+    MINUS   shift, and go to state 49
+    TIMES   shift, and go to state 50
+    DIVIDE  shift, and go to state 51
+    EQ      shift, and go to state 52
+    NEQ     shift, and go to state 53
+    LT      shift, and go to state 54
+    LE      shift, and go to state 55
+    GT      shift, and go to state 56
+    GE      shift, and go to state 57
+    AND     shift, and go to state 58
+    OR      shift, and go to state 59
+
+    $default  reduce using rule 63 (fundec)
