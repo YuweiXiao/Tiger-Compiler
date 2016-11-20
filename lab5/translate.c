@@ -88,7 +88,7 @@ Tr_level Tr_outermost() {
         p->levelIndex = 0;
         p->frame = F_newFrame(Temp_namedlabel("out most"), NULL);
         p->accessList = NULL; 
-        Tr_procFrag(); 
+        Tr_procFrag(Tr_Ex(T_Const(0)), p); 
     }
     return p;
 }
@@ -230,7 +230,6 @@ static struct Cx unCx(Tr_exp e) {
 
 
 Tr_exp Tr_simpleVar(Tr_access access, Tr_level currentLevel) {
-    // printf("here-1\n");
     Tr_level targetLevel = access->level;
     T_exp current = T_Temp(F_FP());
     int i = targetLevel->levelIndex;
@@ -308,11 +307,7 @@ Tr_exp Tr_conditionOpExp(A_oper a_oper, Tr_exp left, Tr_exp right) {
 
 
 // TODO , process Cx expression espcially
-// TODO , deal with void false_exp
 Tr_exp Tr_ifExp(Tr_exp condition, Tr_exp true_exp, Tr_exp false_exp) {
-    // if(false_exp == NULL) {
-    //     printf("translate.c :: error - 30\n");
-    // }
     Temp_temp r = Temp_newtemp();
     Temp_label t = Temp_newlabel(), f = Temp_newlabel();
     
@@ -398,34 +393,33 @@ Tr_exp Tr_initHeapVariable(Tr_exp temp, int index, Tr_exp value, Tr_exp seq) {
 
 Tr_exp Tr_LoopExp(Tr_exp condition, Tr_exp body) {
     Temp_label test = Temp_newlabel();
+    Temp_label bodyLabel = Temp_newlabel();
     Temp_label done = Temp_newlabel();
-    Temp_labelList gotoLabel = Temp_LabelList(test, NULL);
+    Temp_labelList testLabel = Temp_LabelList(test, NULL);
     // printf("here\n");
-    doPatch(unCx(condition).trues, test);
-    doPatch(unCx(condition).trues, done);
+    doPatch(unCx(condition).trues, bodyLabel);
+    doPatch(unCx(condition).falses, done);
     return Tr_Nx(T_Seq(T_Label(test),
                     T_Seq(condition->u.cx.stm,
-                        T_Seq(unNx(body),
-                            T_Seq(T_Jump(T_Const(0), gotoLabel), 
-                                T_Label(done))))));
+                        T_Seq(T_Label(bodyLabel),
+                            T_Seq(unNx(body),
+                                T_Seq(T_Jump(T_Const(0), testLabel), 
+                                    T_Label(done)))))));
 }
 
 
 Tr_exp Tr_callExp(Temp_label name, Tr_level currentLevel, Tr_level funcLevel, T_expList formals) {
-    
-    T_exp staticLink = NULL;
-    if(currentLevel->levelIndex <= funcLevel->levelIndex) {
+    T_exp staticLink = T_Temp(F_FP());
+    if(currentLevel->levelIndex >= funcLevel->levelIndex) {
         int index = currentLevel->levelIndex;
-        staticLink = T_Mem(T_Binop(T_plus, T_Temp(F_FP()), T_Const(0)));
-        while(index < funcLevel->levelIndex) {
+        while(index >= funcLevel->levelIndex) {
+            // printf("here\n");
+            // staticLink = F_Exp(F_formals(currentLevel->frame)->head, staticLink);
             staticLink = T_Mem(T_Binop(T_plus, staticLink, T_Const(0)));
-            ++index;
+            // printf("ok %d\n", index);
+            --index;
         }
-    } else{
-        // pass its own frame pointer
-        staticLink = T_Temp(F_FP());
     }
-
     return Tr_Ex(T_Call(T_Name(name), T_ExpList(staticLink, formals)));
 }
 
@@ -454,6 +448,6 @@ Tr_exp Tr_no_opExp() {
 }
 
 
-void   Tr_procFrag() {
-    fragList = F_FragList(F_ProcFrag(NULL, NULL), fragList);
+void   Tr_procFrag(Tr_exp body, Tr_level level) {
+    fragList = F_FragList(F_ProcFrag(unNx(body), level->frame), fragList);
 }

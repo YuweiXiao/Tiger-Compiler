@@ -75,7 +75,7 @@ static struct expty transCallExp(S_table venv, S_table tenv, A_exp a, Tr_level l
     E_enventry e_enventry = S_look(venv, a->u.call.func);
     if(e_enventry == NULL || e_enventry->kind != E_funEntry) {
         EM_error(a->pos, "undefined function %s", S_name(a->u.call.func));
-        return expTy(NULL, Ty_Void());
+        return expTy(Tr_no_opExp(), Ty_Void());
     } else {
         Ty_tyList tParam = e_enventry->u.func.formals;
         int flag = 0;
@@ -102,24 +102,24 @@ static struct expty transCallExp(S_table venv, S_table tenv, A_exp a, Tr_level l
                 end = Tr_addExpIntoList(end, e.exp);
             }
 
-            // not decleared function or type matches, continue
             tParam = tParam->tail;
         }
         // still more params
         if(!flag && tParam != NULL) {
             EM_error(a->pos, "para type mismatch");
+        } else {
+            return expTy(Tr_callExp(e_enventry->u.func.label, level, e_enventry->u.func.level, expList), 
+                                        e_enventry->u.func.result);
         }
-        return expTy(Tr_callExp(e_enventry->u.func.label, level, e_enventry->u.func.level, expList), 
-                                    e_enventry->u.func.result);
     }
-    return expTy(NULL, e_enventry->u.func.result);
+    return expTy(Tr_no_opExp(), e_enventry->u.func.result);
 }
 
 static struct expty transOpExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
     struct expty left = transExp(venv, tenv, a->u.op.left, level);
     struct expty right = transExp(venv, tenv, a->u.op.right, level);
     switch(a->u.op.oper) {
-        case A_plusOp: case A_minusOp:case A_timesOp:case A_divideOp: {
+        case A_plusOp: case A_minusOp: case A_timesOp: case A_divideOp: {
             // printf("%d -- %d\n", left.ty->kind, right.ty->kind);
             if(actual_ty(tenv, left.ty)->kind != Ty_int) {
                 EM_error(a->u.op.left->pos, "integer required");
@@ -138,7 +138,7 @@ static struct expty transOpExp(S_table venv, S_table tenv, A_exp a, Tr_level lev
         }
     }
     printf("error - 20\n");
-    return expTy(NULL, Ty_Int());
+    return expTy(Tr_no_opExp(), Ty_Int());
 }
 
 struct expty transIfExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
@@ -160,12 +160,12 @@ struct expty transIfExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
             if(left.ty != Ty_Void() && left.ty != Ty_Nil()) {
                 EM_error(a->u.iff.then->pos, "if-then exp's body must produce no value");
             } 
-            //TODO add void exp
-            return expTy(Tr_ifExp(tExpty.exp, left.exp, NULL), Ty_Void());
+            
+            return expTy(Tr_ifExp(tExpty.exp, left.exp, Tr_no_opExp()), Ty_Void());
         }
     }
     printf("error - 12\n");
-    return expTy(NULL, Ty_Void());
+    return expTy(Tr_no_opExp(), Ty_Void());
 }
 
 struct expty transRecordExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
@@ -215,7 +215,7 @@ struct expty transRecordExp(S_table venv, S_table tenv, A_exp a, Tr_level level)
         return expTy(Tr_commbineAllocInitReturn(alloc, init, r), Ty_Record(ty_fieldList));
     }
     
-    return expTy(NULL, Ty_Record(ty_fieldList));
+    return expTy(Tr_no_opExp(), Ty_Record(ty_fieldList));
 }
 
 struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
@@ -226,7 +226,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
             // printf("var exp\n");
             return transVar(venv, tenv, a->u.var, level);
         case A_nilExp:
-            return expTy(NULL, Ty_Nil());
+            return expTy(Tr_no_opExp(), Ty_Nil());
         case A_intExp: 
             // printf("int exp \n");
             return expTy(Tr_intExp(a->u.intt), Ty_Int());
@@ -270,7 +270,6 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
         case A_whileExp: {
             // printf("in while %d\n", a->u.whilee.test->kind);
             tExpty = transExp(venv, tenv, a->u.whilee.test, level);
-            // printf("here\n");
           // if(tExpty.ty->kind != Ty_int) {
           //   EM_error(a->pos, "while loop test should be integer expression.");
           // }
@@ -309,6 +308,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
                     exp = Tr_seqExp(exp, tmp);
                 }
             }
+            // printf("ok\n");
             tExpty = transExp(venv, tenv, a->u.let.body, level);
             exp = Tr_seqExp(exp, tExpty.exp);
             S_endScope(venv);
@@ -330,10 +330,9 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
                 if(actual_ty(tenv, e_enventry->u.var.ty)->kind != actual_ty(tenv, right.ty)->kind) {
                     EM_error(a->u.array.init->pos, "type mismatch");
                 }
+                return expTy(Tr_arrayExp(tExpty.exp, right.exp), Ty_Array(e_enventry->u.var.ty));    
             }
-            return expTy(Tr_arrayExp(tExpty.exp, right.exp), Ty_Array(e_enventry->u.var.ty));
-            return expTy(NULL, Ty_Array(Ty_Int()));
-            break;
+            return expTy(Tr_no_opExp(), Ty_Array(Ty_Int()));
         }
     } 
     printf("error - 15\n");
@@ -348,12 +347,11 @@ struct expty transVar(S_table venv, S_table tenv, A_var v, Tr_level level) {
             e_enventry = S_look(venv, v->u.simple);
             if(e_enventry == NULL) {
                 EM_error(v->pos, "undefined variable %s", S_name(v->u.simple));
-                return expTy(NULL, Ty_Int());
+                return expTy(Tr_no_opExp(), Ty_Int());
             }
             if(e_enventry->kind == E_funEntry) {
                 EM_error(v->pos, "var should not be func");
             }
-            // printf("here\n");
             return expTy(Tr_simpleVar(e_enventry->u.var.access, level), e_enventry->u.var.ty);
         }
         case A_fieldVar:
@@ -362,21 +360,19 @@ struct expty transVar(S_table venv, S_table tenv, A_var v, Tr_level level) {
             tExpty.ty = actual_ty(tenv, tExpty.ty);
             if(tExpty.ty == NULL || tExpty.ty->kind != Ty_record) {
                 EM_error(v->pos, "not a record type");
-                return expTy(NULL, Ty_Int());
+                return expTy(Tr_no_opExp(), Ty_Int());
             }
             Ty_fieldList fieldlist = tExpty.ty->u.record;
             int index = 0;
             for(;fieldlist != NULL; fieldlist = fieldlist->tail) {
-                // printf("find field\n");
                 Ty_field field = fieldlist->head;
                 if( strcmp( S_name(field->name), S_name(v->u.field.sym)) == 0) {
-                    // printf("iii\n");
                     return expTy(Tr_fieldVar(tExpty.exp, index), field->ty);
                 }
                 ++index;
             }
             EM_error(v->pos, "field %s doesn't exist", S_name(v->u.field.sym));
-            return expTy(NULL, Ty_Int());
+            return expTy(Tr_no_opExp(), Ty_Int());
         case A_subscriptVar: {
             left = transVar(venv, tenv, v->u.subscript.var, level);
             if(left.ty == NULL || left.ty->kind != Ty_array) {
@@ -390,7 +386,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v, Tr_level level) {
         }
     }
     printf("error - 11\n");
-    return expTy(NULL, Ty_Nil());
+    return expTy(Tr_no_opExp(), Ty_Nil());
 }
 
 
@@ -460,10 +456,11 @@ static void transFuncDec(S_table venv, S_table tenv, A_dec d, Tr_level level) {
             Tr_access access = Tr_allocLocal(func->u.func.level, TRUE);
             S_enter(venv, fieldlist->head->name, E_VarEntry(access, e_enventry->u.var.ty)); // add to parameter type list
         }
-        Tr_procFrag();
+        
         
         struct expty tExpty = transExp(venv, tenv, funcdec->body, func->u.func.level);
-        // printf("here\n");
+        Tr_procFrag(tExpty.exp, func->u.func.level);
+        
         if(funcdec->result == NULL) {
             if(tExpty.ty != NULL && tExpty.ty != Ty_Void() && tExpty.ty != Ty_Nil()) {
                 EM_error(d->pos, "procedure returns value");

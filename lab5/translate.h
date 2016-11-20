@@ -34,7 +34,7 @@ Tr_exp Tr_newTemp();
 Tr_exp Tr_LoopExp(Tr_exp condition, Tr_exp body);
 Tr_exp Tr_callExp(Temp_label, Tr_level, Tr_level, T_expList);
 T_expList Tr_addExpIntoList(T_expList, Tr_exp);
-void   Tr_procFrag();
+void   Tr_procFrag(Tr_exp body, Tr_level level);
 Tr_exp Tr_no_opExp();
 
 void Tr_procEntryExit(Tr_level level, Tr_exp body, Tr_accessList formals);

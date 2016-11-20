@@ -137,7 +137,21 @@ assignExp : lvalue ASSIGN exp {$$ = A_AssignExp(EM_tokPos, $1, $3);}
 
 /* for loop expression*/
 /* while loop expression*/
-loopExp : FOR ID ASSIGN exp TO exp DO exp {$$ = A_ForExp(EM_tokPos, S_Symbol($2), $4, $6, $8);}
+loopExp : FOR ID ASSIGN exp TO exp DO exp {
+            S_symbol i_symbol = S_Symbol($2);
+            S_symbol limit_symbol = S_Symbol("limit");
+            A_var i = A_SimpleVar(EM_tokPos, i_symbol);
+            A_var limit = A_SimpleVar(EM_tokPos, limit_symbol);
+            A_decList declist = A_DecList( A_VarDec(EM_tokPos, i_symbol, S_Symbol("int"), $4),
+                                        A_DecList( A_VarDec(EM_tokPos, limit_symbol, S_Symbol("int"), $6), NULL));
+            A_exp testOp = A_OpExp(EM_tokPos, A_leOp, A_VarExp(EM_tokPos, i), A_VarExp(EM_tokPos, limit));
+            $$ = A_LetExp(EM_tokPos, declist, 
+                    A_WhileExp(EM_tokPos, testOp,
+                      A_SeqExp(EM_tokPos, A_ExpList($8, 
+                        A_ExpList( A_AssignExp(EM_tokPos, i, 
+                          A_OpExp(EM_tokPos, A_plusOp, A_VarExp(EM_tokPos, i), A_IntExp(EM_tokPos, 1))), NULL)))));
+            // $$ = A_ForExp(EM_tokPos, S_Symbol($2), $4, $6, $8);
+        }
         | WHILE exp DO exp {$$ = A_WhileExp(EM_tokPos, $2, $4);}
 
 /* let expression*/
