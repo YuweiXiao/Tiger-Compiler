@@ -365,11 +365,14 @@ Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp value) {
     // alloc space for array, register r is array address
     Temp_temp r = Temp_newtemp();
     Temp_temp s = Temp_newtemp(); 
+    Temp_temp fullSize = Temp_newtemp();
     T_stm getSize = T_Move(T_Temp(s), unEx(size));  // calculate size, put it into register s
-    T_stm alloc = T_Seq(getSize, T_Move(T_Temp(r), 
-                            T_Call(
-                                T_Name(Temp_namedlabel("mallloc"))
-                                , T_ExpList(T_Temp(s), NULL))));
+    T_stm getFullSize = T_Move(T_Temp(fullSize), T_Binop(T_mul, T_Temp(s), T_Const(4)));
+    T_stm alloc = T_Seq(getSize, 
+                        T_Seq(getFullSize, T_Move(T_Temp(r), 
+                                T_Call(
+                                    T_Name(Temp_namedlabel("mallloc"))
+                                    , T_ExpList(T_Temp(fullSize), NULL)))));
     
     // for (i = 0; i < size;) {
     //      move(MEM(tmpR), value);

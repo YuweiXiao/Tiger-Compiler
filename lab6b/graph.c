@@ -17,7 +17,7 @@
 
 struct G_graph_ {int nodecount;
 		 G_nodeList mynodes, mylast;
-	       };
+		   };
 
 struct G_node_ {
   G_graph mygraph;
@@ -70,7 +70,7 @@ G_nodeList G_nodes(G_graph g)
 bool G_inNodeList(G_node a, G_nodeList l) {
   G_nodeList p;
   for(p=l; p!=NULL; p=p->tail)
-    if (p->head==a) return TRUE;
+	if (p->head==a) return TRUE;
   return FALSE;
 }
 
@@ -99,15 +99,15 @@ void G_rmEdge(G_node from, G_node to) {
   */
 void G_show(FILE *out, G_nodeList p, void showInfo(void *)) {
   for (; p!=NULL; p=p->tail) {
-    G_node n = p->head;
-    G_nodeList q;
-    assert(n);
-    if (showInfo) 
-      showInfo(n->info);
-    fprintf(out, " (%d): ", n->mykey); 
-    for(q=G_succ(n); q!=NULL; q=q->tail) 
-           fprintf(out, "%d ", q->head->mykey);
-    fprintf(out, "\n");
+	G_node n = p->head;
+	G_nodeList q;
+	assert(n);
+	if (showInfo) 
+	  showInfo(n->info);
+	fprintf(out, " (%d): ", n->mykey); 
+	for(q=G_succ(n); q!=NULL; q=q->tail) 
+		   fprintf(out, "%d ", q->head->mykey);
+	fprintf(out, "\n");
   }
 }
 
@@ -167,4 +167,103 @@ void *G_look(G_table t, G_node node)
   return TAB_look(t, node);
 }
 
+/* My_G_NodeList functions */
 
+My_G_nodeList My_Empty_G_nodeList() {
+	My_G_nodeList list = (My_G_nodeList) checked_malloc(sizeof *list);;
+	list->tail = list->head = NULL;
+	return list;
+}
+
+// construct My_G_NodeList from G_nodeList
+My_G_nodeList cloneFromGnodeList(G_nodeList list) {
+    My_G_nodeList t1 = My_Empty_G_nodeList();
+    while(list) {
+        appendMyGnodeList(t1, list->head);
+        list = list->tail;
+    }
+    return t1;
+}
+
+
+void appendMyGnodeList(My_G_nodeList list, G_node node) {
+  	assert(list);
+	if(list->head == NULL) {
+		list->head = list->tail = G_NodeList(node, NULL);
+	} else {
+		list->tail->tail = G_NodeList(node, NULL);
+		list->tail = list->tail->tail;
+	}
+}
+
+My_G_nodeList cloneMyGnodeList(My_G_nodeList t1) {
+	assert(t1);
+	My_G_nodeList list = My_Empty_G_nodeList();
+	G_nodeList now = t1->head;
+	while(now) {
+		appendMyGnodeList(list, now->head);
+		now = now->tail;
+	}
+	return list;
+}
+
+int findInMyGnodeList(My_G_nodeList list, G_node t) {
+	assert(list);
+	G_nodeList now = list->head;
+	while(now) {
+		if(now->head == t) {
+			return TRUE;
+		}
+		now = now->tail;
+	}
+	return FALSE;
+}
+
+My_G_nodeList unionMyGnodeList(My_G_nodeList t1, My_G_nodeList t2) {
+	assert(t1); assert(t2);
+	My_G_nodeList ret = cloneMyGnodeList(t1);
+	G_nodeList now = t2->head;
+	while(now) {
+		if(findInMyGnodeList(t1, now->head) == FALSE) {
+			appendMyGnodeList(ret, now->head);
+		}
+		now = now->tail;
+	}
+	return ret;
+}
+
+My_G_nodeList subMyGnodeList(My_G_nodeList t1, My_G_nodeList t2) {
+	assert(t1); assert(t2);
+	My_G_nodeList ret = My_Empty_G_nodeList();
+	G_nodeList now = t1->head;
+	while(now) {
+		if(findInMyGnodeList(t2, now->head) == FALSE) {
+			appendMyGnodeList(ret, now->head);
+		}
+		now = now->tail;
+	}
+	return ret;
+}
+
+// not tested yet
+// determine whether My_Gnode_List is empty
+int emptyMyGnodeList(My_G_nodeList t1) {
+    assert(t1);
+    if(t1->head == NULL) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+// not tested yet
+// pop first element from My_G_nodeList 
+G_node popMyGnodeList(My_G_nodeList t1) {
+    assert(t1);
+    if(emptyMyGnodeList(t1))
+        return NULL;
+    G_node ret = t1->head->head;
+    t1->head = t1->head->tail;
+    if(t1->head == NULL)
+        t1->tail = NULL;
+    return ret;
+}

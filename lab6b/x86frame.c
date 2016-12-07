@@ -28,12 +28,104 @@ struct F_access_ {
     } u;
 };
 
-Temp_temp F_FP() {
-    static Temp_temp fp = NULL;
-    if(fp == NULL) {
-        fp = Temp_newtemp();
+Temp_temp F_EAX() {
+    static Temp_temp eax = NULL;
+    if(eax == NULL) {
+        eax = Temp_newtemp();
     }
-    return fp;
+    return eax;
+}
+
+Temp_temp F_EBX() {
+    static Temp_temp t = NULL;
+    if(t == NULL) {
+        t = Temp_newtemp();
+    }
+    return t;
+}
+
+Temp_temp F_ECX() {
+    static Temp_temp t = NULL;
+    if(t == NULL) {
+        t = Temp_newtemp();
+    }
+    return t;
+}
+
+Temp_temp F_EDX() {
+    static Temp_temp t = NULL;
+    if(t == NULL) {
+        t = Temp_newtemp();
+    }
+    return t;
+}
+
+Temp_temp F_ESI() {
+    static Temp_temp t = NULL;
+    if(t == NULL) {
+        t = Temp_newtemp();
+    }
+    return t;
+}
+
+Temp_temp F_EDI() {
+    static Temp_temp t = NULL;
+    if(t == NULL) {
+        t = Temp_newtemp();
+    }
+    return t;
+}
+
+Temp_temp F_ESP() {
+    static Temp_temp t = NULL;
+    if(t == NULL) {
+        t = Temp_newtemp();
+    }
+    return t;
+}
+
+Temp_temp F_EBP() {
+    static Temp_temp t = NULL;
+    if(t == NULL) {
+        t = Temp_newtemp();
+    }
+    return t;
+}
+
+Temp_temp F_FP() {
+    return F_EBP();
+}
+
+Temp_tempList F_registers() {
+    static Temp_tempList registers = NULL;
+    if(registers == NULL) {
+        registers = Temp_TempList(F_EAX(),
+                    Temp_TempList(F_EBX(),
+                    Temp_TempList(F_ECX(),
+                    Temp_TempList(F_EDX(),
+                    Temp_TempList(F_ESI(),
+                    Temp_TempList(F_EDI(),
+                    Temp_TempList(F_ESP(),
+                    Temp_TempList(F_EBP(), NULL))))))));
+        
+    }
+    return registers;
+}
+
+Temp_map F_preColored() {
+    static Temp_map F_tempMap = NULL;
+    if(F_tempMap == NULL) {
+        F_tempMap = Temp_empty();
+        Temp_enter(F_tempMap, F_EAX(), "%eax");
+        Temp_enter(F_tempMap, F_EBX(), "%ebx");
+        Temp_enter(F_tempMap, F_ECX(), "%ecx");
+        Temp_enter(F_tempMap, F_EDX(), "%edx");
+        Temp_enter(F_tempMap, F_ESI(), "%esi");
+        Temp_enter(F_tempMap, F_EDI(), "%edi");
+        Temp_enter(F_tempMap, F_ESP(), "%esp");
+        Temp_enter(F_tempMap, F_EBP(), "%ebp");
+    }
+    return F_tempMap;
 }
 
 T_exp F_Exp(F_access acc, T_exp framePtr) {

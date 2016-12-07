@@ -28,23 +28,29 @@ extern bool anyErrors;
 /* print the assembly language instructions to filename.s */
 static void doProc(FILE *out, F_frame frame, T_stm body)
 {
- AS_proc proc;
- T_stmList stmList;
- AS_instrList iList;
+	// printIRTree(body);
+	AS_proc proc;
+	T_stmList stmList;
+	AS_instrList iList;
 
- F_tempMap = Temp_empty();
+	F_tempMap = Temp_empty();
 
- stmList = C_linearize(body);
- stmList = C_traceSchedule(C_basicBlocks(stmList));
- /* printStmList(stdout, stmList);*/
- iList  = F_codegen(frame, stmList); /* 9 */
+	stmList = C_linearize(body);
+    stmList = C_traceSchedule(C_basicBlocks(stmList));
+  
+  	// printStmList(stdout, stmList);
+	iList  = F_codegen(frame, stmList); /* 9 */
+    // AS_printInstrList(out, iList, Temp_layerMap(F_tempMap, Temp_name()));
+// printf("here!!!\n\n");
+    // fflush(stdout);
+    // fflush(out);
+    
+	struct RA_result ra = RA_regAlloc(frame, iList);  /* 10, 11 */
 
- struct RA_result ra = RA_regAlloc(frame, iList);  /* 10, 11 */
-
- fprintf(out, "BEGIN function\n");
- AS_printInstrList (out, iList,
-                       Temp_layerMap(F_tempMap,ra.coloring));
- fprintf(out, "END function\n\n");
+	// fprintf(out, "BEGIN function\n");
+	// AS_printInstrList (out, iList,
+	// 				   Temp_layerMap(F_tempMap,ra.coloring));
+	// fprintf(out, "END function\n\n");
 }
 
 int main(int argc, string *argv)
@@ -58,8 +64,8 @@ int main(int argc, string *argv)
  if (argc==2) {
    absyn_root = parse(argv[1]);
    if (!absyn_root)
-     return 1;
-     
+	 return 1;
+	 
 #if 0
    pr_exp(out, absyn_root, 0); /* print absyn data structure */
    fprintf(out, "\n");
@@ -75,10 +81,10 @@ int main(int argc, string *argv)
    out = fopen(outfile, "w");
    /* Chapter 8, 9, 10, 11 & 12 */
    for (;frags;frags=frags->tail)
-     if (frags->head->kind == F_procFrag) 
-       doProc(out, frags->head->u.proc.frame, frags->head->u.proc.body);
-     else if (frags->head->kind == F_stringFrag) 
-       fprintf(out, "%s\n", frags->head->u.stringg.str);
+	 if (frags->head->kind == F_procFrag) 
+	   doProc(out, frags->head->u.proc.frame, frags->head->u.proc.body);
+	 else if (frags->head->kind == F_stringFrag) 
+	   fprintf(out, "%s\n", frags->head->u.stringg.str);
 
    fclose(out);
    return 0;

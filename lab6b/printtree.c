@@ -103,3 +103,8 @@ void printStmList (FILE *out, T_stmList stmList)
     pr_stm(out, stmList->head,0); fprintf(out, "\n");
   }
 }
+
+
+void printIRTree (T_stm stm) {
+  pr_stm(stdout, stm, 0);
+}

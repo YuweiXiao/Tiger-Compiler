@@ -1,3 +1,5 @@
+#ifndef GRAPH_H
+#define GRAPH_H
 /*
  * graph.h - Abstract Data Type (ADT) for directed graphs
  */
@@ -7,6 +9,34 @@ typedef struct G_node_ *G_node;    /* The "node" type */
 
 typedef struct G_nodeList_ *G_nodeList;
 struct G_nodeList_ { G_node head; G_nodeList tail;};
+
+
+typedef struct My_G_nodeList_ *My_G_nodeList;
+struct My_G_nodeList_ {
+    G_nodeList head;
+    G_nodeList tail;
+};
+
+
+// make a empty new My_G_NodeList
+My_G_nodeList My_Empty_G_nodeList();
+// construct My_G_NodeList from G_nodeList
+My_G_nodeList cloneFromGnodeList(G_nodeList list);
+// append a G_node in the end of list
+void appendMyGnodeList(My_G_nodeList list, G_node node);
+// clone a My_G_NodeList
+My_G_nodeList cloneMyGnodeList(My_G_nodeList t1);
+// find element in My_G_NodeList, return TRUE if t exists, FALSE ow.
+int findInMyGnodeList(My_G_nodeList list, G_node t);
+// return My_G_NodeList equal to t1 union t2
+My_G_nodeList unionMyGnodeList(My_G_nodeList t1, My_G_nodeList t2);
+// return My_G_NodeList equal to t1 subtract t2
+My_G_nodeList subMyGnodeList(My_G_nodeList t1, My_G_nodeList t2);
+// determine whether My_Gnode_List is empty
+int emptyMyGnodeList(My_G_nodeList t1);
+// pop first element from My_G_nodeList 
+G_node popMyGnodeList(My_G_nodeList t1);
+
 
 /* Make a new graph */
 G_graph G_Graph(void); 
@@ -62,3 +92,5 @@ void G_enter(G_table t, G_node node, void *value);
 
 /* Tell what "node" maps to in table "t" */
 void *G_look(G_table t, G_node node);
+
+#endif

@@ -15,6 +15,10 @@
 
 struct Temp_temp_ {int num;};
 
+int getTempNum(Temp_temp t) {
+  return t->num;
+}
+
 string Temp_labelstring(Temp_label s)
 {return S_name(s);
 }
@@ -110,4 +114,108 @@ void Temp_dumpMap(FILE *out, Temp_map m) {
      fprintf(out,"---------\n");
      Temp_dumpMap(out,m->under);
   }
+}
+
+
+
+/*  My_Temp_TempList functions */
+
+// make a empty new My_Temp_TempList
+My_Temp_TempList My_Empty_Temp_TempList() {
+    My_Temp_TempList list = (My_Temp_TempList)checked_malloc(sizeof *list);
+    list->tail = list->head = NULL;
+    list->length = 0;
+    return list;
+}
+
+
+// TODO not tested yet
+// construct My_Temp_TempList from Temp_tempList
+My_Temp_TempList cloneFromTempList(Temp_tempList list) {
+    My_Temp_TempList t = My_Empty_Temp_TempList();
+    while(list) {
+        appendMyTempList(t, list->head);
+        list = list->tail;
+    }
+    return t;
+}
+
+// append a Temp_temp in the end of list
+void appendMyTempList(My_Temp_TempList list, Temp_temp node) {
+    assert(list);
+    if(list->head == NULL) {
+        list->head = list->tail = Temp_TempList(node, NULL);
+    } else {
+        list->tail->tail = Temp_TempList(node, NULL);
+        list->tail = list->tail->tail;
+    }
+    list->length += 1;
+}
+
+// clone a My_Temp_TempList
+My_Temp_TempList cloneMyTempList(My_Temp_TempList t1) {
+    assert(t1);
+    My_Temp_TempList list = My_Empty_Temp_TempList();
+    Temp_tempList now = t1->head;
+    while(now) {
+        appendMyTempList(list, now->head);
+        now = now->tail;
+    }
+    return list;
+}
+
+// find element in My_Temp_TempList, return TRUE if t exists, FALSE ow.
+int findInMyTempList(My_Temp_TempList list, Temp_temp t) {
+    assert(list);
+    Temp_tempList now = list->head;
+    while(now) {
+        if(now->head == t) {
+            return TRUE;
+        }
+        now = now->tail;
+    }
+    return FALSE;
+}
+
+// TODO not tested yet
+// determine whether t1, t2 is equal
+int isEqualMyTempList(My_Temp_TempList t1, My_Temp_TempList t2) {
+    if(t1->length != t2->length) {
+        return FALSE;
+    }
+    Temp_tempList now = t2->head;
+    while(now) {
+        if(findInMyTempList(t1, now->head) == FALSE) 
+            return FALSE;
+        now = now->tail;
+    }
+    return TRUE;
+}
+
+// return My_Temp_TempList equal to t1 union t2
+My_Temp_TempList unionMyTempList(My_Temp_TempList t1, My_Temp_TempList t2) {
+    assert(t1); assert(t2);
+    My_Temp_TempList ret = cloneMyTempList(t1);
+    Temp_tempList now = t2->head;
+    while(now) {
+        if(findInMyTempList(t1, now->head) == FALSE) {
+            appendMyTempList(ret, now->head);
+        }
+        now = now->tail;
+    }
+    return ret;
+}
+
+// return My_Temp_TempList equal to t1 subtract t2
+My_Temp_TempList subMyTempList(My_Temp_TempList t1, My_Temp_TempList t2) {
+    assert(t1); assert(t2);
+    My_Temp_TempList ret = My_Empty_Temp_TempList();
+    Temp_tempList now = t1->head;
+    while(now) {
+        if(findInMyTempList(t2, now->head) == FALSE) {
+            appendMyTempList(ret, now->head);
+        }
+        now = now->tail;
+    }
+    return ret;
 }

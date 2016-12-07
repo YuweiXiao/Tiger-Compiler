@@ -77,5 +77,12 @@ S_table E_base_venv(void) {
 				NULL, 
 				Ty_String())
 		  );
+  	S_enter(env, S_Symbol("printi"), 
+			E_FunEntry(
+				Tr_outermost(),
+				Temp_namedlabel("printi"),
+				Ty_TyList(Ty_Int(), NULL), 
+				Ty_Void())
+		  );
   	return env;
 }

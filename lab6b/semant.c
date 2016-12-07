@@ -312,12 +312,11 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
                     exp = Tr_seqStm(exp, tmp);
                 }
             }
-            // printf("ok\n");
             tExpty = transExp(venv, tenv, a->u.let.body, level);
             exp = Tr_seqExp(exp, tExpty.exp);
             S_endScope(venv);
             S_endScope(tenv);
-            return expTy(exp, Ty_Void());
+            return expTy(exp, tExpty.ty);
         }
         case A_arrayExp:{
             e_enventry = S_look(tenv, a->u.array.typ);  // get array element type

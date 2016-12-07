@@ -8,10 +8,35 @@
 
 typedef struct Temp_temp_ *Temp_temp;
 Temp_temp Temp_newtemp(void);
+int getTempNum(Temp_temp);
 
 typedef struct Temp_tempList_ *Temp_tempList;
 struct Temp_tempList_ { Temp_temp head; Temp_tempList tail;};
 Temp_tempList Temp_TempList(Temp_temp h, Temp_tempList t);
+
+typedef struct My_Temp_TempList_ *My_Temp_TempList;
+struct My_Temp_TempList_ {
+    int length;
+    Temp_tempList head;
+    Temp_tempList tail;
+};
+// make a empty new My_Temp_TempList
+My_Temp_TempList My_Empty_Temp_TempList();
+// construct My_Temp_TempList from Temp_tempList
+My_Temp_TempList cloneFromTempList(Temp_tempList list);
+// append a Temp_temp in the end of list
+void appendMyTempList(My_Temp_TempList list, Temp_temp node);
+// clone a My_Temp_TempList
+My_Temp_TempList cloneMyTempList(My_Temp_TempList t1);
+// find element in My_Temp_TempList, return TRUE if t exists, FALSE ow.
+int findInMyTempList(My_Temp_TempList list, Temp_temp t);
+// determine whether t1, t2 is equal
+int isEqualMyTempList(My_Temp_TempList t1, My_Temp_TempList t2);
+// return My_Temp_TempList equal to t1 union t2
+My_Temp_TempList unionMyTempList(My_Temp_TempList t1, My_Temp_TempList t2);
+// return My_Temp_TempList equal to t1 subtract t2
+My_Temp_TempList subMyTempList(My_Temp_TempList t1, My_Temp_TempList t2);
+
 
 typedef S_symbol Temp_label;
 Temp_label Temp_newlabel(void);
