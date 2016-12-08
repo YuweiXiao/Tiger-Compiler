@@ -118,3 +118,123 @@ struct Live_graph Live_liveness(G_graph flow) {
 
 
 
+/* My_Live_MoveList functions */
+
+// make a empty new My_Live_moveList
+My_Live_moveList My_Empty_Live_moveList() {
+    My_Live_moveList list = (My_Live_moveList)checked_malloc(sizeof *list);
+    list->tail = list->head = NULL;
+    list->length = 0;
+    return list;
+}
+
+// construct My_Live_moveList from Live_moveList
+My_Live_moveList cloneFromLiveMoveList(Live_moveList list) {
+    My_Live_moveList t = My_Empty_Live_moveList();
+    while(list) {
+        appendMyLiveMoveList(t, list->src, list->dst);
+        list = list->tail;
+    }
+    return t;
+}
+
+// clone a My_Live_moveList
+My_Live_moveList cloneMyLiveMoveList(My_Live_moveList t1) {
+    assert(t1);
+    My_Live_moveList list = My_Empty_Live_moveList();
+    Live_moveList now = t1->head;
+    while(now) {
+        appendMyLiveMoveList(list, now->src, now->dst);
+        now = now->tail;
+    }
+    return list;
+}
+
+// append a Temp_temp in the end of list
+void appendMyLiveMoveList(My_Live_moveList list, G_node src, G_node dst) {
+    assert(list);   
+    if(list->head == NULL) {
+        list->head = list->tail = Live_MoveList(src, dst, NULL);
+    } else {
+        list->tail->tail = Live_MoveList(src, dst, NULL);
+        list->tail = list->tail->tail;
+    }
+    list->length += 1;
+}
+
+// append a Temp_temp in the end of list, if src->dst is already exist in list, then do nothing
+void checkedAppendMyLiveMoveList(My_Live_moveList list, G_node src, G_node dst) {
+    if(findInMyLiveMoveList(list, src, dst) == FALSE)
+        appendMyLiveMoveList(list, src, dst);
+}
+
+// find element in My_Live_moveList, return TRUE if t exists, FALSE ow.
+int findInMyLiveMoveList(My_Live_moveList list, G_node src, G_node dst) {
+    assert(list);
+    Live_moveList now = list->head;
+    while(now) {
+        if(now->src == src && now->dst == dst) {
+            return TRUE;
+        }
+        now = now->tail;
+    }
+    return FALSE;
+}
+
+// determine whether t1, t2 is equal
+int isEqualMyLiveMoveList(My_Live_moveList t1, My_Live_moveList t2) {
+    if(t1->length != t2->length) {
+        return FALSE;
+    }
+    Live_moveList now = t2->head;
+    while(now) {
+        if(findInMyLiveMoveList(t1, now->src, now->dst) == FALSE) 
+            return FALSE;
+        now = now->tail;
+    }
+    return TRUE;
+}
+// return My_Live_moveList equal to t1 union t2
+My_Live_moveList unionMyLiveMoveList(My_Live_moveList t1, My_Live_moveList t2) {
+    assert(t1); assert(t2);
+    My_Live_moveList ret = cloneMyLiveMoveList(t1);
+    Live_moveList now = t2->head;
+    while(now) {
+        if(findInMyLiveMoveList(t1, now->src, now->dst) == FALSE) {
+            appendMyLiveMoveList(ret, now->src, now->dst);
+        }
+        now = now->tail;
+    }
+    return ret;
+}
+
+// return My_Live_moveList equal to t1 subtract t2
+My_Live_moveList subMyLiveMoveList(My_Live_moveList t1, My_Live_moveList t2) {
+    assert(t1); assert(t2);
+    My_Live_moveList ret = My_Empty_Live_moveList();
+    Live_moveList now = t1->head;
+    while(now) {
+        if(findInMyLiveMoveList(t2, now->src, now->dst) == FALSE) {
+            appendMyLiveMoveList(ret, now->src, now->dst);
+        }
+        now = now->tail;
+    }
+    return ret;
+}
+
+// determine whether My_Live_moveList is empty
+bool emptyMyLiveMoveList(My_Live_moveList t1) {
+	assert(t1);
+	if(t1->head == NULL) 
+		return TRUE;
+	return FALSE;
+}
+
+// pop first element from My_Live_moveList 
+void popMyLiveMoveList(My_Live_moveList t1) {
+    if(emptyMyLiveMoveList(t1) == TRUE)
+        return;
+    t1->head = t1->head->tail;
+    if(t1->head == NULL)
+        t1->tail = NULL;
+}

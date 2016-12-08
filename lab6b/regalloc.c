@@ -11,6 +11,7 @@
 #include "liveness.h"
 #include "regalloc.h"
 #include "table.h"
+#include "flowgraph.h"
 
 
 void show(void* t) {
@@ -24,7 +25,7 @@ struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
     struct Live_graph lg = Live_liveness(flowGraph);
     Temp_map initial = Temp_layerMap(Temp_empty(), F_preColored());
     Temp_tempList regs = F_registers();
-    struct COL_result colorResult = COL_color(lg.graph, initial, regs);
+    struct COL_result colorResult = COL_color(lg, initial, regs);
 
     // G_show(stdout, G_nodes(lg.graph), show);
 

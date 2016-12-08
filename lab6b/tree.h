@@ -4,6 +4,7 @@
  */
 #ifndef TREE_H
 #define TREE_H
+#include "temp.h"
 
 typedef struct T_stm_ *T_stm;
 typedef struct T_exp_ *T_exp;

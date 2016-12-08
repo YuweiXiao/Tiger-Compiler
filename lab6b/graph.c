@@ -35,6 +35,14 @@ G_graph G_Graph(void)
  return g;
 }
 
+int G_nodesNumber(G_graph g) {
+  return g->nodecount;
+}
+
+int G_nodeKey(G_node node) {
+  return node->mykey;
+}
+
 G_nodeList G_NodeList(G_node head, G_nodeList tail)
 {G_nodeList n = (G_nodeList) checked_malloc(sizeof *n);
  n->head=head;
@@ -187,13 +195,24 @@ My_G_nodeList cloneFromGnodeList(G_nodeList list) {
 
 
 void appendMyGnodeList(My_G_nodeList list, G_node node) {
-  	assert(list);
+  	assert(list && node);
 	if(list->head == NULL) {
 		list->head = list->tail = G_NodeList(node, NULL);
 	} else {
 		list->tail->tail = G_NodeList(node, NULL);
 		list->tail = list->tail->tail;
 	}
+}
+
+// TODO, not tested yet
+// append a G_node in the front of list
+void insertFrontMyGnodeList(My_G_nodeList list, G_node node) {
+    assert(list && node);
+    if(list->head == NULL) {
+        list->head = list->tail = G_NodeList(node, NULL);
+    }  else {
+        list->head = G_NodeList(node, list->head);
+    }
 }
 
 My_G_nodeList cloneMyGnodeList(My_G_nodeList t1) {
@@ -217,6 +236,12 @@ int findInMyGnodeList(My_G_nodeList list, G_node t) {
 		now = now->tail;
 	}
 	return FALSE;
+}
+
+// append a G_node in the end of list, if the node is already exist, then do nothing
+void checkedAppendMyGnodeList(My_G_nodeList list, G_node node) {
+    if(findInMyGnodeList(list, node) == FALSE)
+        appendMyGnodeList(list, node);
 }
 
 My_G_nodeList unionMyGnodeList(My_G_nodeList t1, My_G_nodeList t2) {
@@ -247,13 +272,14 @@ My_G_nodeList subMyGnodeList(My_G_nodeList t1, My_G_nodeList t2) {
 
 // not tested yet
 // determine whether My_Gnode_List is empty
-int emptyMyGnodeList(My_G_nodeList t1) {
+bool emptyMyGnodeList(My_G_nodeList t1) {
     assert(t1);
     if(t1->head == NULL) {
         return TRUE;
     }
     return FALSE;
 }
+
 
 // not tested yet
 // pop first element from My_G_nodeList 
@@ -267,3 +293,31 @@ G_node popMyGnodeList(My_G_nodeList t1) {
         t1->tail = NULL;
     return ret;
 }
+
+/* My_G_bitMatrix functions */
+
+/* create a new bitMatrix, the element number is same to list*/
+My_G_bitMatrix My_G_BitMatrix(int n) {
+    My_G_bitMatrix bitMatrix = (My_G_bitMatrix)checked_malloc(sizeof *bitMatrix);
+    bitMatrix->num = n;
+    bitMatrix->matrix = (bool *)checked_malloc(n * n * sizeof(bool));
+    int i = 0;
+    for(; i < n*n; ++i) {
+        (bitMatrix->matrix)[i] = FALSE;
+    }
+    return bitMatrix;
+}
+
+/* add edge in matrix, add t1->t2*/
+void My_G_bitMatrixAdd(My_G_bitMatrix bitMatrix, int t1, int t2) {
+    (bitMatrix->matrix)[t1*bitMatrix->num+t2] = TRUE;
+}
+/* remove edge in matrix, remove t1->t2*/
+void My_G_bitMatrixRemove(My_G_bitMatrix bitMatrix, int t1, int t2) {
+    (bitMatrix->matrix)[t1*bitMatrix->num+t2] = FALSE;
+}
+/* check whether t1 is connect with t2*/
+bool My_G_bitMatrixIsConnect(My_G_bitMatrix bitMatrix, int t1, int t2) {
+    return (bitMatrix->matrix)[t1*bitMatrix->num+t2] == TRUE;
+}
+
