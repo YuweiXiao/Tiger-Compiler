@@ -99,6 +99,7 @@ static void format(char *result, string assem,
 	break;
       case 'd': {int n = atoi(++p);
 		 string s = Temp_look(m, nthTemp(dst,n));
+     assert(s);
 		 strcpy(result+i, s);
 		 i += strlen(s);
 	       }

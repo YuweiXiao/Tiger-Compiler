@@ -46,11 +46,12 @@ static void doProc(FILE *out, F_frame frame, T_stm body)
     // fflush(out);
     
 	struct RA_result ra = RA_regAlloc(frame, iList);  /* 10, 11 */
+ //    assert(ra.coloring);
 
-	// fprintf(out, "BEGIN function\n");
-	// AS_printInstrList (out, iList,
-	// 				   Temp_layerMap(F_tempMap,ra.coloring));
-	// fprintf(out, "END function\n\n");
+	fprintf(out, "BEGIN function\n");
+	AS_printInstrList (out, iList,
+					   Temp_layerMap(Temp_layerMap(ra.coloring, F_tempMap), Temp_name()));
+	fprintf(out, "END function\n\n");
 }
 
 int main(int argc, string *argv)

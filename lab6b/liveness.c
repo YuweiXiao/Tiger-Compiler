@@ -208,6 +208,19 @@ My_Live_moveList unionMyLiveMoveList(My_Live_moveList t1, My_Live_moveList t2) {
     return ret;
 }
 
+// return My_Live_moveList equal to t1 intersect t2
+My_Live_moveList interectMyLiveMoveList(My_Live_moveList t1, My_Live_moveList t2) {
+    assert(t1); assert(t2);
+    My_Live_moveList ret = My_Empty_Live_moveList();
+    Live_moveList now = t1->head;
+    for(; now; now = now->tail) {
+        if(findInMyLiveMoveList(t2, now->src, now->dst) == TRUE) {
+            appendMyLiveMoveList(ret, now->src, now->dst);
+        }
+    }
+    return ret;
+}
+
 // return My_Live_moveList equal to t1 subtract t2
 My_Live_moveList subMyLiveMoveList(My_Live_moveList t1, My_Live_moveList t2) {
     assert(t1); assert(t2);

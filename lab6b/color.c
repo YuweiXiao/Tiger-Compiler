@@ -75,6 +75,7 @@ void COL_assignColors(Temp_tempList regs) {
     int i = 0;
     while(emptyMyGnodeList(selectStack) == FALSE) {
         G_node n = popMyGnodeList(selectStack);
+        i = 0;
         for(; i < K; ++i) {
             okColor[i] = TRUE;
         }
@@ -96,15 +97,19 @@ void COL_assignColors(Temp_tempList regs) {
             }
         }
         if(k == -1) {
+            printf("spill\n");
             appendMyGnodeList(spilledNodes, n);
         } else {
             appendMyGnodeList(coloredNodes, n);
             G_enter(color, n, k);
+            // printf("color:%d - %s\n", getTempNum(Live_gtemp(n)), Temp_look(precolored, reg));
             Temp_enter(colorMap, Live_gtemp(n), Temp_look(precolored, reg));
         }
     }
     G_nodeList tList = coalescedNodes->head;
     for(; tList; tList = tList->tail) {
+        // printf("color:%d - %s\n", getTempNum(Live_gtemp(tList->head)), 
+            // Temp_look(precolored, Live_gtemp(COL_getAlias(tList->head))));
         Temp_enter(colorMap, Live_gtemp(tList->head), 
                     Temp_look(precolored, Live_gtemp(COL_getAlias(tList->head))));
     }
@@ -131,7 +136,7 @@ void COL_freezeMoves(G_node u) {
         G_node x = tList->src;
         G_node y = tList->dst;
         G_node v;
-        if(COL_getAlias(y) == u) {
+        if(COL_getAlias(y) == COL_getAlias(u)) {
             v = COL_getAlias(x);
         } else {
             v = COL_getAlias(y);
@@ -173,7 +178,7 @@ void COL_addEdge(G_node u, G_node v) {
 }
 
 void COL_combine(G_node u, G_node v) {
-    if(findInMyGnodeList(freezeWorklist, v)) {
+    if(findInMyGnodeList(freezeWorklist, v) == TRUE) {
         freezeWorklist = subMyGnodeList(freezeWorklist, 
                             cloneFromGnodeList(G_NodeList(v, NULL)));
     } else {
@@ -190,7 +195,7 @@ void COL_combine(G_node u, G_node v) {
         COL_addEdge(tList->head, u);
         COL_decrementDegree(tList->head);
     }
-    if(degree[G_nodeKey(u)] >= K && findInMyGnodeList(freezeWorklist, u)) {
+    if(degree[G_nodeKey(u)] >= K && findInMyGnodeList(freezeWorklist, u) == TRUE) {
         freezeWorklist = subMyGnodeList(freezeWorklist, 
                                 cloneFromGnodeList(G_NodeList(u, NULL)));
         checkedAppendMyGnodeList(spillWorklist, u);
@@ -213,7 +218,7 @@ void COL_addWorkList(G_node n) {
     if(isPrecolored(n) == FALSE  && COL_moveRelated(n) == FALSE 
             && degree[G_nodeKey(n)] < K) {
         freezeWorklist = subMyGnodeList(freezeWorklist, cloneFromGnodeList(G_NodeList(n, NULL)));
-        appendMyGnodeList(simplifyWorklist, n);
+        checkedAppendMyGnodeList(simplifyWorklist, n);
     }
 }
 
@@ -274,7 +279,7 @@ void COL_coalesce() {
         COL_combine(u, v);
         COL_addWorkList(u);
     } else {
-        appendMyLiveMoveList(activeMoves, x, y);
+        checkedAppendMyLiveMoveList(activeMoves, x, y);
     }
 }
 
@@ -287,7 +292,7 @@ void COL_enableMoves(My_G_nodeList list) {
             if(findInMyLiveMoveList(activeMoves, tMoves->src, tMoves->dst) == TRUE) {
                 activeMoves = subMyLiveMoveList(activeMoves, 
                                 cloneFromLiveMoveList(Live_MoveList(tMoves->src, tMoves->dst, NULL)));
-                appendMyLiveMoveList(worklistMoves, tMoves->src, tMoves->dst);
+                checkedAppendMyLiveMoveList(worklistMoves, tMoves->src, tMoves->dst);
             }
         }
     }
@@ -328,7 +333,7 @@ void COL_simplify() {
 
 My_Live_moveList COL_nodeMoves(G_node n) {
     My_Live_moveList t = G_lookupMoveList(n);
-    t = subMyLiveMoveList(t, unionMyLiveMoveList(activeMoves, worklistMoves));
+    t = interectMyLiveMoveList(t, unionMyLiveMoveList(activeMoves, worklistMoves));
     return t;
 } 
 
@@ -372,7 +377,7 @@ void init(int n, Temp_map tPrecolored, Temp_tempList registers) {
     moveList = G_empty();        // G_node -> Live_moveList
     alias    = G_empty();        // G_node -> G_node
     color    = G_empty();
-    colorMap = F_preColored();
+    colorMap = Temp_layerMap(Temp_empty(), F_preColored());
 
     degree   = (int *)checked_malloc(sizeof(int) * n);
     int i = 0;
@@ -391,33 +396,30 @@ void build(struct Live_graph lg) {
     G_graph ig = lg.graph;
     G_nodeList list = G_nodes(ig);
     // construct initial list  &  adjSet & alias
-    while(list) {
-        if(Temp_look(precolored, Live_gtemp(list->head)) == NULL) {
+    for(; list; list = list->tail) {
+        if( isPrecolored(list->head) == FALSE ) {
             appendMyGnodeList(initial, list->head);
         }
         degree[G_nodeKey(list->head)] = G_degree(list->head);
         G_enter(alias, list->head, list->head);
         G_enter(adjList, list->head, cloneFromGnodeList(G_adj(list->head)));
         G_nodeList succ = G_succ(list->head);
-        while(succ) {
+        for(; succ; succ = succ->tail) {
             My_G_bitMatrixAdd(adjSet, G_nodeKey(succ->head), G_nodeKey(list->head));
             My_G_bitMatrixAdd(adjSet, G_nodeKey(list->head), G_nodeKey(succ->head));
-            succ = succ->tail;
         }
-        list = list->tail;
     }
 
     worklistMoves = cloneFromLiveMoveList(lg.moves);
 
     // construct moveList
     Live_moveList tmoveList = lg.moves;
-    while(tmoveList) {
+    for(; tmoveList; tmoveList = tmoveList->tail) {
         My_Live_moveList t1 = G_lookupMoveList(tmoveList->src);
         appendMyLiveMoveList(t1, tmoveList->src, tmoveList->dst);
         // TODO, check correctness, didn't enter back into moveList
         My_Live_moveList t2 = G_lookupMoveList(tmoveList->src);
         appendMyLiveMoveList(t2, tmoveList->src, tmoveList->dst);
-        tmoveList = tmoveList->tail;
     }
 }
 
@@ -428,19 +430,19 @@ void doWork(){
             && emptyMyGnodeList(freezeWorklist) == TRUE
             && emptyMyGnodeList(spillWorklist) == TRUE)) {
         if(emptyMyGnodeList(simplifyWorklist) != TRUE) {
-            printf("simplify\n");
+            // printf("simplify\n");
             COL_simplify();
         }
         if(emptyMyLiveMoveList(worklistMoves) != TRUE) {
-            printf("Coalesce\n");
+            // printf("Coalesce\n");
             COL_coalesce();
         }
         if(emptyMyGnodeList(freezeWorklist) != TRUE) {
-            printf("freeze\n");
+            // printf("freeze\n");
             COL_freeze();
         }
         if(emptyMyGnodeList(spillWorklist) != TRUE) {
-            printf("spill\n");
+            // printf("spill\n");
             COL_selectSpill();
         }
     }
@@ -458,35 +460,7 @@ struct COL_result COL_color(struct Live_graph lg, Temp_map tPrecolored, Temp_tem
     for(; nodes; nodes = nodes->tail) {
         ret.spills = Temp_TempList(Live_gtemp(nodes->head), ret.spills);
     } 
-
+    ret.coloring = colorMap;
 
 	return ret;
 }
-
-
-// void doWork() {
-//     // G_show(stdout, G_nodes(lg.graph), show);
-//     // build()
-//     // makeWorkList()   // do initial works
-//     while(!(simplifyWorklist == NULL && worklistMoves == NULL && 
-//             freezeWorklist == NULL && spillWorklist == NULL)) {
-//         if(simplifyWorklist != NULL)
-//             //simplify()
-//             ;
-//         if(worklistMoves != NULL)
-//             //Coalesce()
-//             ;
-//         if(freezeWorklist != NULL)
-//             //Freeze()
-//             ;
-//         if(spillWorklist != NULL)
-//             //selectSpill()
-//             ;
-//     }
-//     // AssignColors()
-//     if(spilledNodes != NULL) {
-//         //rewriteProgram(spillNodes) 
-//         //doWork()    
-//     }
-// }
-

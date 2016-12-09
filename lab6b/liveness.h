@@ -35,6 +35,8 @@ int isEqualMyLiveMoveList(My_Live_moveList t1, My_Live_moveList t2);
 bool emptyMyLiveMoveList(My_Live_moveList t1);
 // return My_Live_moveList equal to t1 union t2
 My_Live_moveList unionMyLiveMoveList(My_Live_moveList t1, My_Live_moveList t2);
+// return My_Live_moveList equal to t1 intersect t2
+My_Live_moveList interectMyLiveMoveList(My_Live_moveList t1, My_Live_moveList t2);
 // return My_Live_moveList equal to t1 subtract t2
 My_Live_moveList subMyLiveMoveList(My_Live_moveList t1, My_Live_moveList t2);
 // pop first element from My_Live_moveList 
