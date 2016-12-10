@@ -67,6 +67,27 @@ void rewriteProgram(F_frame f, Temp_tempList spills, AS_instrList il) {
     }
 }
 
+void removeUselessMoves(AS_instrList il, Temp_map color) {
+    AS_instrList pre = NULL;
+    for(; il; il = il->tail) {
+        AS_instr instr = il->head;
+        if(instr->kind == I_MOVE) {
+            Temp_tempList dst = instr->u.MOVE.dst;
+            Temp_tempList src = instr->u.MOVE.src;
+
+            if(dst && src && dst->tail == NULL && src->tail == NULL) {
+                if(Temp_look(color, dst->head) == Temp_look(color,src->head)) {
+                    if(pre != NULL) {
+                        pre->tail = il->tail;
+                        continue;
+                    }
+                }
+            }
+        }
+        pre = il;
+    }
+}
+
 struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
     G_graph flowGraph = FG_AssemFlowGraph(il, f);
     assert(flowGraph);
@@ -82,11 +103,12 @@ struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
     
 
     if(colorResult.spills != NULL) {
-        printf("rewrite\n");
+        // printf("rewrite\n");
         rewriteProgram(f, colorResult.spills, il);
-        printf("rewrite complete\n");
+        // printf("rewrite complete\n");
         return RA_regAlloc(f, il);
     }  
+    // removeUselessMoves(il, colorResult.coloring);
     struct RA_result ret = {colorResult.coloring, il};
 	return ret;
 }

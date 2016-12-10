@@ -388,11 +388,13 @@ void init(int n, Temp_map tPrecolored, Temp_tempList registers) {
     color    = G_empty();
     colorMap = Temp_layerMap(Temp_empty(), F_preColored());
 
+    // init degree, set all nodes degree to zero
     degree   = (int *)checked_malloc(sizeof(int) * n);
     int i = 0;
     for(; i < n; ++i)
         degree[i] = 0;
 
+    // get K : the number of registers
     K = 0;
     while(registers) {
         ++K;

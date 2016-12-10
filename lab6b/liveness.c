@@ -88,7 +88,7 @@ struct Live_graph Live_liveness(G_graph flow) {
 		Temp_tempList d = def->head;
 		Temp_tempList l = liveIn->head;
 		for(; d; d = d->tail) {
-			for(; l; l = l->tail) {
+			for(l = liveIn->head; l; l = l->tail) {
 				addEdge(lg.graph, d->head, l->head);
 					// lg.interfereTemps = Live_InterfereTempList(
 					// 		lookupTemp2GnodeTAB(lg.graph, l->head), 
@@ -107,8 +107,7 @@ struct Live_graph Live_liveness(G_graph flow) {
 				My_Temp_TempList preNodeLiveOut = lookupLiveMap(liveOutMap, preNodes->head);
 				preNodeLiveOut = unionMyTempList(liveIn, preNodeLiveOut);
 				enterLiveMap(liveOutMap, preNodes->head, preNodeLiveOut);
-				if(findInMyGnodeList(edgeNodes, preNodes->head) == FALSE)
-					appendMyGnodeList(edgeNodes, preNodes->head);
+                checkedAppendMyGnodeList(edgeNodes, preNodes->head);
 			}
 		}
 	}
