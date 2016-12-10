@@ -10,6 +10,8 @@
 #include "table.h"
 #include "color.h"
 
+FILE *fp;
+
 /* register(color) number */
 int K;
 
@@ -73,8 +75,14 @@ My_Live_moveList G_lookupMoveList(G_node n) {
 void COL_assignColors(Temp_tempList regs) {
     bool *okColor = checked_malloc(K*sizeof(bool));
     int i = 0;
+    // G_nodeList nodes = selectStack->head;
+    // int count =  0;
+    // for(; nodes; nodes = nodes->tail)
+    //     count++;
+    // fprintf(fp, "----------------%d-------------\n", count);
     while(emptyMyGnodeList(selectStack) == FALSE) {
         G_node n = popMyGnodeList(selectStack);
+        // fprintf(fp, "reg:%d\n", getTempNum(Live_gtemp(n)));
         i = 0;
         for(; i < K; ++i) {
             okColor[i] = TRUE;
@@ -96,22 +104,23 @@ void COL_assignColors(Temp_tempList regs) {
                 break;
             }
         }
+        fprintf(fp, "color:%d, %s\n", k, Temp_look(precolored, reg));
         if(k == -1) {
-            printf("spill\n");
             appendMyGnodeList(spilledNodes, n);
         } else {
             appendMyGnodeList(coloredNodes, n);
             G_enter(color, n, k);
-            // printf("color:%d - %s\n", getTempNum(Live_gtemp(n)), Temp_look(precolored, reg));
+            // fprintf(fp, "color:%d - %s\n", getTempNum(Live_gtemp(n)), Temp_look(precolored, reg));
             Temp_enter(colorMap, Live_gtemp(n), Temp_look(precolored, reg));
         }
     }
     G_nodeList tList = coalescedNodes->head;
     for(; tList; tList = tList->tail) {
-        // printf("color:%d - %s\n", getTempNum(Live_gtemp(tList->head)), 
+        // fprintf(fp, "last:color:%d  alias:%d - %s\n", getTempNum(Live_gtemp(tList->head)), 
+            // getTempNum(Live_gtemp(COL_getAlias(tList->head))),
             // Temp_look(precolored, Live_gtemp(COL_getAlias(tList->head))));
         Temp_enter(colorMap, Live_gtemp(tList->head), 
-                    Temp_look(precolored, Live_gtemp(COL_getAlias(tList->head))));
+                    Temp_look(colorMap, Live_gtemp(COL_getAlias(tList->head))));
     }
 }
 
@@ -449,6 +458,7 @@ void doWork(){
 }
 
 struct COL_result COL_color(struct Live_graph lg, Temp_map tPrecolored, Temp_tempList regs) {
+    fp = fopen("my.log", "w");
 	struct COL_result ret = {NULL, NULL};
     init(G_nodesNumber(lg.graph), tPrecolored, regs);
     build(lg);

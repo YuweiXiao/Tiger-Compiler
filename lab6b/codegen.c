@@ -21,12 +21,6 @@ static void munchMoveStm(T_stm s);
 static Temp_temp munchMemExp(T_exp e);
 static Temp_temp munchOpExp(T_exp e);
 
-static string createString(string format, int i) {
-	char buf[100];
-	sprintf(buf, format, i);
-	return String(buf);
-}
-
 
 static AS_instrList iList = NULL, last = NULL;
 static void emit(AS_instr inst) {

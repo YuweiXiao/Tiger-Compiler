@@ -15,6 +15,12 @@ void *checked_malloc(int len)
  return p;
 }
 
+string createString(string format, int i) {
+    char buf[100];
+    sprintf(buf, format, i);
+    return String(buf);
+}
+
 string String(char *s)
 {string p = checked_malloc(strlen(s)+1);
  strcpy(p,s);
