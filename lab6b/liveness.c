@@ -51,16 +51,19 @@ static G_node lookupTemp2GnodeTAB(G_graph graph, Temp_temp t) {
 void addEdge(G_graph g, Temp_temp u, Temp_temp v) {
 	if(u == v)
 		return;
+    // printf("-------------------------------------link %d-%d\n", getTempNum(u), getTempNum(v));
 	G_addEdge(lookupTemp2GnodeTAB(g, u), lookupTemp2GnodeTAB(g, v));
+    G_addEdge(lookupTemp2GnodeTAB(g, v), lookupTemp2GnodeTAB(g, u));
 }
 
 struct Live_graph Live_liveness(G_graph flow) {
 	G_table liveInMap = G_empty();
 	G_table liveOutMap = G_empty();
+    temp2GnodeTable = TAB_empty();
 	// nodes tobe update, like a queue.
 	My_G_nodeList edgeNodes =  cloneFromGnodeList(G_nodes(flow));
 		
-	temp2GnodeTable = TAB_empty();
+	
 	struct Live_graph lg = {G_Graph(), NULL};
 	Temp_tempList tmp;
 
@@ -79,6 +82,7 @@ struct Live_graph Live_liveness(G_graph flow) {
 		// remove <use> from <liveIn> temperaily, so the <def> will not interfere with <use>
 		if(FG_isMove(curNode) == TRUE) {
 			liveIn = subMyTempList(liveIn, use);
+            assert(FG_def(curNode)->tail == NULL && FG_use(curNode)->tail == NULL);
 			lg.moves = Live_MoveList(lookupTemp2GnodeTAB(lg.graph, FG_def(curNode)->head),
 									 lookupTemp2GnodeTAB(lg.graph, FG_use(curNode)->head), lg.moves);
 		}
@@ -111,6 +115,14 @@ struct Live_graph Live_liveness(G_graph flow) {
 			}
 		}
 	}
+
+    Temp_tempList regs = F_registers();
+    Temp_tempList regs2 = F_registers();
+    for(; regs; regs = regs->tail) {
+        for(; regs2; regs2 = regs2->tail) {
+            addEdge(lg.graph, regs->head, regs2->head);
+        }
+    }
 
 	return lg;
 }

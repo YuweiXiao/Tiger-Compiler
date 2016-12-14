@@ -95,18 +95,18 @@ digits [0-9]+
   }
   yylval.sval = checked_malloc(sizeof(char)*size);
   for(i = 1; i < size - 1; ++i) {
-    if(yytext[i] == '\\') {
-      if(yytext[i+1] == 'n') {
-        yylval.sval[p] = '\n';  
-      } else if(yytext[i+1] == 't') {
-        yylval.sval[p] = '\t';  
-      } else if(yytext[i+1] == '0') { 
-        yylval.sval[p] = '\0';  
-      }
-      i++;
-    } else {
+    // if(yytext[i] == '\\') {
+    //   if(yytext[i+1] == 'n') {
+    //     yylval.sval[p] = '\n';  
+    //   } else if(yytext[i+1] == 't') {
+    //     yylval.sval[p] = '\t';  
+    //   } else if(yytext[i+1] == '0') { 
+    //     yylval.sval[p] = '\0';  
+    //   }
+    //   i++;
+    // } else {
       yylval.sval[p] = yytext[i];  
-    }
+    // }
     p++;
   }
   yylval.sval[p] = '\0';

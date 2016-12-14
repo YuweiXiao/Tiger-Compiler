@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+int *tMalloc(int size) {
+  void *a  = malloc(sizeof(int) * size);
+  return a;
+}
 
 int *initArray(int size, int init)
 {int i;
@@ -29,20 +33,24 @@ int stringEqual(struct string *s, struct string *t)
  return 1;
 }
 
+void flush()
+{
+ fflush(stdout);
+}
+
 void print(struct string *s)
 {int i; unsigned char *p=s->chars;
  for(i=0;i<s->length;i++,p++) putchar(*p);
+  flush();
 }
 
 void printi(int k)
 {
 	printf("%d", k);
+  flush();
 }
 
-void flush()
-{
- fflush(stdout);
-}
+
 
 struct string consts[256];
 struct string empty={0,""};

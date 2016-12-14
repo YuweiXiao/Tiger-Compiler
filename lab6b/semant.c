@@ -352,6 +352,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v, Tr_level level) {
                 EM_error(v->pos, "undefined variable %s", S_name(v->u.simple));
                 return expTy(Tr_no_opExp(), Ty_Int());
             }
+            //TODO useless???
             if(e_enventry->kind == E_funEntry) {
                 EM_error(v->pos, "var should not be func");
             }
@@ -388,7 +389,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v, Tr_level level) {
             return expTy(Tr_arrayVar(left.exp, right.exp), Ty_Array(actual_ty(tenv, left.ty)));       
         }
     }
-    printf("error - 11\n");
+    assert(0);
     return expTy(Tr_no_opExp(), Ty_Nil());
 }
 
@@ -454,9 +455,14 @@ static void transFuncDec(S_table venv, S_table tenv, A_dec d, Tr_level level) {
         A_fieldList fieldlist = funcdec->params;
         E_enventry func = S_look(venv, funcdec->name);
         // printf("function name:%s \n", S_name(funcdec->name));
+        
+        Tr_accessList accessList = func->u.func.level->accessList->tail;
         for(;fieldlist != NULL; fieldlist = fieldlist->tail) {
             e_enventry = S_look(tenv, fieldlist->head->typ);    // find field type in tenv  
-            Tr_access access = Tr_allocLocal(func->u.func.level, TRUE);
+            assert(accessList);
+            Tr_access access = accessList->head;
+            accessList = accessList->tail;
+            // Tr_access access = Tr_allocLocal(func->u.func.level, TRUE);
             S_enter(venv, fieldlist->head->name, E_VarEntry(access, e_enventry->u.var.ty)); // add to parameter type list
         }
         
@@ -577,5 +583,5 @@ Ty_ty transTy (S_table tenv, A_ty a) {
             return Ty_Array(e_enventry->u.var.ty);
         }
     }
-    printf("error - 16\n");
+    assert(0);
 } 

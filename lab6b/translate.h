@@ -9,10 +9,24 @@
 typedef struct Tr_exp_ *Tr_exp;
 
 typedef struct Tr_access_ *Tr_access;
-
-typedef struct Tr_accessList_ *Tr_accessList;
-
 typedef struct Tr_level_ *Tr_level;
+typedef struct Tr_accessList_ *Tr_accessList;
+struct Tr_access_ {
+    //Lab5: your code here
+    Tr_level level;
+    F_access access;
+};
+struct Tr_accessList_ {
+    Tr_access head;
+    Tr_accessList tail; 
+};
+struct Tr_level_ {
+    //Lab5: your code here
+    Tr_level parent;
+    int levelIndex;
+    F_frame frame;
+    Tr_accessList accessList;
+};
 
 Tr_exp Tr_simpleVar(Tr_access access, Tr_level level);
 Tr_exp Tr_arrayVar(Tr_exp, Tr_exp);

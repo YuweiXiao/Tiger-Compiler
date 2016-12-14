@@ -35,61 +35,77 @@ static void doProc(FILE *out, F_frame frame, T_stm body)
 
 	F_tempMap = Temp_empty();
 
+    body = F_procEntryExit1(frame, body);
 	stmList = C_linearize(body);
     stmList = C_traceSchedule(C_basicBlocks(stmList));
   
-  	// printStmList(stdout, stmList);
+    // fprintf(out, "-------------------------------------------\n");    
+  	// printStmList(out, stmList);
 	iList  = F_codegen(frame, stmList); /* 9 */
+
+    // fprintf(out, "------------------------------\n");
+    // Temp_dumpMap(out, F_preColored());
+    // fprintf(out, "------------------------------\n");
     // AS_printInstrList(out, iList, Temp_layerMap(F_tempMap, Temp_name()));
-// printf("here!!!\n\n");
+    // fprintf(out, "--------------------------------!@#!@#!@#\n");
     // fflush(stdout);
     // fflush(out);
-    
-	struct RA_result ra = RA_regAlloc(frame, iList);  /* 10, 11 */
- //    assert(ra.coloring);
 
-	fprintf(out, "BEGIN function\n");
-	AS_printInstrList (out, iList,
+
+    iList = F_procEntryExit2(iList);
+	struct RA_result ra = RA_regAlloc(frame, iList);  /* 10, 11 */
+    assert(ra.coloring);
+
+    // fprintf(out, "------------------------------\n");
+    // AS_printInstrList(out, iList, Temp_layerMap(F_tempMap, Temp_name()));
+    // fprintf(out, "--------------------------------!@#!@#!@#\n");
+
+    proc = F_procEntryExit3(frame, iList);
+    fprintf(out, "%s\n", proc->prolog);
+	AS_printInstrList (out, proc->body,
 					   Temp_layerMap(Temp_layerMap(ra.coloring, F_tempMap), Temp_name()));
-	fprintf(out, "END function\n\n");
+	fprintf(out, "%s\n\n", proc->epilog);
 }
 
 int main(int argc, string *argv)
 {
- A_exp absyn_root;
- S_table base_env, base_tenv;
- F_fragList frags;
- char outfile[100];
- FILE *out = stdout;
+    A_exp absyn_root;
+    S_table base_env, base_tenv;
+    F_fragList frags;
+    char outfile[100];
+    FILE *out = stdout;
 
- if (argc==2) {
-   absyn_root = parse(argv[1]);
-   if (!absyn_root)
-	 return 1;
+    if (argc == 2) {
+        absyn_root = parse(argv[1]);
+        if (!absyn_root)
+	       return 1;
 	 
-#if 0
-   pr_exp(out, absyn_root, 0); /* print absyn data structure */
-   fprintf(out, "\n");
-#endif
-	//If you have implemented escape analysis, uncomment this
-   //Esc_findEscape(absyn_root); /* set varDec's escape field */
+        #if 0
+           pr_exp(out, absyn_root, 0); /* print absyn data structure */
+           fprintf(out, "\n");
+        #endif
+    	//If you have implemented escape analysis, uncomment this
+        //Esc_findEscape(absyn_root); /* set varDec's escape field */
 
-   frags = SEM_transProg(absyn_root);
-   if (anyErrors) return 1; /* don't continue */
+        frags = SEM_transProg(absyn_root);
+        if (anyErrors) return 1; /* don't continue */
 
-   /* convert the filename */
-   sprintf(outfile, "%s.s", argv[1]);
-   out = fopen(outfile, "w");
-   /* Chapter 8, 9, 10, 11 & 12 */
-   for (;frags;frags=frags->tail)
-	 if (frags->head->kind == F_procFrag) 
-	   doProc(out, frags->head->u.proc.frame, frags->head->u.proc.body);
-	 else if (frags->head->kind == F_stringFrag) 
-	   fprintf(out, "%s\n", frags->head->u.stringg.str);
-
-   fclose(out);
-   return 0;
- }
- EM_error(0,"usage: tiger file.tig");
- return 1;
+        /* convert the filename */
+        sprintf(outfile, "%s.s", argv[1]);
+        out = fopen(outfile, "w");
+        /* Chapter 8, 9, 10, 11 & 12 */
+        for (;frags;frags=frags->tail) {
+            if (frags->head->kind == F_procFrag) 
+                doProc(out, frags->head->u.proc.frame, frags->head->u.proc.body);
+            else if (frags->head->kind == F_stringFrag) {
+                //TODO  \n, \t these should be treated as \\n , \\t
+                //TODO move the .string format into frame.h  x86frame.c
+                fprintf(out, "%s: .string \"%s\"\n", S_name(frags->head->u.stringg.label), frags->head->u.stringg.str);
+            }
+        }
+        fclose(out);
+        return 0;
+    }
+    EM_error(0, "usage: tiger file.tig");
+    return 1;
 }

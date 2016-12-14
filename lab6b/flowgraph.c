@@ -7,14 +7,6 @@
 #include "table.h"
 #include "flowgraph.h"
 
-struct NodeInfo_ {
-	AS_instr instr;
-	Temp_tempList def;
-	Temp_tempList use;
-};
-
-typedef struct NodeInfo_ *NodeInfo;
-
 NodeInfo NewNodeInfo(AS_instr instr) {
 	NodeInfo p = checked_malloc(sizeof(*p));
 	switch(instr->kind) {
@@ -50,23 +42,35 @@ bool FG_isMove(G_node n) {
 	return info->instr->kind == I_MOVE;
 }
 
+FILE *flowgraph_out = NULL;
+
 G_graph FG_AssemFlowGraph(AS_instrList il, F_frame f) {
+	if(flowgraph_out == NULL)
+		flowgraph_out = fopen("my11.txt", "w");
 	G_graph graph = G_Graph();
+	fprintf(flowgraph_out, "------------start------------------------------------------------------------------------------%d\n", G_nodesNumber(graph));
 	S_table labelTable = S_empty();
 	G_node preNode = NULL;
+	AS_instr preInstr = NULL;
 	AS_instrList list = il;
 	// first loop over all instr, create all node, and get label table
 	for(; list != NULL; list = list->tail) {
 		AS_instr instr = list->head;
 		G_node node = G_Node(graph, NewNodeInfo(instr));
+		// printf("%s\n", );
 		if(instr->kind == I_LABEL) {
 			// printf("---#######################%s$$$$$$$$$$$$$$\n", S_name(instr->u.LABEL.label));
 			S_enter(labelTable, instr->u.LABEL.label, node);
 		} 
 		if(preNode != NULL) {
-			G_addEdge(preNode, node);
+			if( !(preInstr->kind == I_OPER && strcmp(preInstr->u.OPER.assem, "jmp `j0\n") == 0))
+				G_addEdge(preNode, node);
+			else {
+				fprintf(flowgraph_out, "---#######################$$$$$$$$$$$$$@@@@@@@@@@@@$\n");
+			}
 		}
 		preNode = node;
+		preInstr = instr;
 	}
 
 	G_nodeList nodeList = G_nodes(graph);
@@ -86,5 +90,10 @@ G_graph FG_AssemFlowGraph(AS_instrList il, F_frame f) {
 			G_addEdge(node, next);
 		}
 	}
+
+	
+	G_show(flowgraph_out, G_nodes(graph), NULL);
+    fprintf(flowgraph_out, "-----finish----------------------------------------\n");
+
 	return graph;
 }

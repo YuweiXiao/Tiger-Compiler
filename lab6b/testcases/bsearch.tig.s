@@ -1,525 +1,269 @@
-BEGIN function
+.text
+.globl tigermain
+.type tigermain, @function
+ tigermain:
+pushl %ebp
+movl %esp, %ebp
+addl $-36, %esp
 L13:
-mov %ebx <- 16
-mov M[%eax+4] <- %ebx
-ADDI 113 <- %eax+8
-mov %ebx <- 113
-LOAD 116 <- M[%eax+4]
-mov %ecx <- 116
-MULI 119 <- %ecx*4
-mov %esi <- 119
-pushl %esi
-call %eax
-mov 101 <- 121
-mov 124 <- 0
-mov %esi <- 124
-mov 125 <- 0
-mov %edi <- 125
-mov %edx <- 101
-L0:
-cmp %esi, %ecx
-jl L1
-L2:
-LOAD %edi <- M[r0+0]
-mov M[%ebx] <- %edi
-pushl %eax
-call %eax
-jmp %edi
-L1:
-LOAD %edi <- M[r0+0]
-mov M[%edx] <- %edi
-ADDI 142 <- %esi+1
-mov %esi <- 142
-ADDI 145 <- %edx+4
-mov %edx <- 145
-mov %edi <- 0
-jmp %edi
-L12:
-
-END function
-
-BEGIN function
-L13:
-mov %ebx <- 16
-mov M[%eax+4] <- %ebx
-ADDI 113 <- %eax+8
-mov %esp <- 113
-LOAD 116 <- M[%eax+4]
-mov %edi <- 116
-MULI 119 <- %edi*4
-mov %ebx <- 119
+movl %edi, -12(%ebp)
+movl %esi, -16(%ebp)
+movl %ebx, -20(%ebp)
+movl $16, %ebx
+movl %ebx, -4(%ebp)
+movl %ebp, %ebx
+addl $-8, %ebx
+movl %ebx, -24(%ebp)
+movl -4(%ebp), %ebx
+movl %ebx, %edi
+movl %edi, %ebx
+imull $4, %ebx
 pushl %ebx
-call %eax
-mov 101 <- 121
-mov 124 <- 0
-mov %esi <- 124
-mov 125 <- 0
-mov %ebx <- 125
-mov %edx <- 101
+call tMalloc
+movl %eax, %esi
+movl $0, %ecx
+movl $0, %edx
+movl %esi, %ebx
 L0:
-cmp %esi, %edi
+cmp %edi, %ecx
 jl L1
 L2:
-LOAD %ebx <- M[r0+0]
-mov M[%esp] <- %ebx
-pushl %eax
-call %eax
-jmp %ebx
+movl -24(%ebp), %ebx
+movl %esi, (%ebx)
+pushl %ebp
+call try
+movl -20(%ebp), %ebx
+movl -16(%ebp), %esi
+movl -12(%ebp), %edi
+jmp L12
 L1:
-LOAD %ebx <- M[r0+0]
-mov M[%edx] <- %ebx
-ADDI 142 <- %esi+1
-mov %esi <- 142
-ADDI 145 <- %edx+4
-mov %edx <- 145
-mov %ebx <- 0
-jmp %ebx
+movl %edx, (%ebx)
+addl $1, %ecx
+addl $4, %ebx
+jmp L0
 L12:
+leave
+ret
+
+
+
+
+.text
+.globl try
+.type try, @function
+ try:
+pushl %ebp
+movl %esp, %ebp
+addl $-24, %esp
 L15:
-LOAD %ebx <- M[%eax+0]
+movl %edi, %edi
+movl %edi, -4(%ebp)
+movl %esi, %esi
+movl %esi, -8(%ebp)
+movl %ebx, %ebx
+movl %ebx, -12(%ebp)
+movl 8(%ebp), %ebx
 pushl %ebx
-call %eax
-LOAD %ebx <- M[%eax+0]
-LOAD 163 <- M[%ebx+0]
-mov %ebx <- 163
-LOAD %esi <- M[%eax+0]
-mov %edx <- 0
-LOAD %edi <- M[%eax+4]
-LOAD %edi <- M[%edi+4]
-SUBI %esp <- %edi-1
-mov %edi <- 7
-pushl %edi
-pushl %esp
-pushl %edx
-pushl %esi
-call %eax
-mov %ecx <- 167
+call init
+movl 8(%ebp), %ebx
+movl %ebx, %edi
+movl 8(%ebp), %edx
+movl $0, %esi
+movl 8(%ebp), %ebx
+movl -4(%ebx), %ecx
+movl %ecx, %ecx
+subl $1, %ecx
+movl $7, %ebx
+pushl %ebx
 pushl %ecx
-pushl %ebx
-call %eax
-LOAD %ebx <- M[%eax+0]
-LOAD %ebx <- M[%ebx+0]
+pushl %esi
+pushl %edx
+call bsearch
+movl %eax, %eax
 pushl %eax
+pushl %edi
+call printi
+movl 8(%ebp), %ebx
+pushl .L11
 pushl %ebx
-call %eax
+call print
+movl -12(%ebp), %ebx
+movl %ebx, %ebx
+movl -8(%ebp), %esi
+movl %esi, %esi
+movl -4(%ebp), %edi
+movl %edi, %edi
 jmp L14
 L14:
+leave
+ret
 
-END function
 
 
 
-BEGIN function
-L13:
-mov %ebx <- 16
-mov M[%eax+4] <- %ebx
-ADDI 113 <- %eax+8
-mov %esp <- 113
-LOAD 116 <- M[%eax+4]
-mov %esi <- 116
-MULI 119 <- %esi*4
-mov %ebx <- 119
-pushl %ebx
-call %eax
-mov 101 <- 121
-mov 124 <- 0
-mov %edx <- 124
-mov 125 <- 0
-mov %ebx <- 125
-mov %ecx <- 101
-L0:
-cmp %edx, %esi
-jl L1
-L2:
-LOAD %ebx <- M[r0+0]
-mov M[%esp] <- %ebx
-pushl %eax
-call %eax
-jmp %ebx
-L1:
-LOAD %ebx <- M[r0+0]
-mov M[%ecx] <- %ebx
-ADDI 142 <- %edx+1
-mov %edx <- 142
-ADDI 145 <- %ecx+4
-mov %ecx <- 145
-mov %ebx <- 0
-jmp %ebx
-L12:
-L15:
-LOAD %ebx <- M[%eax+0]
-pushl %ebx
-call %eax
-LOAD %ebx <- M[%eax+0]
-LOAD 163 <- M[%ebx+0]
-mov %ebx <- 163
-LOAD %esi <- M[%eax+0]
-mov %esp <- 0
-LOAD %ecx <- M[%eax+4]
-LOAD %ecx <- M[%ecx+4]
-SUBI %edx <- %ecx-1
-mov %ecx <- 7
-pushl %ecx
-pushl %edx
-pushl %esp
-pushl %esi
-call %eax
-mov %edi <- 167
-pushl %edi
-pushl %ebx
-call %eax
-LOAD %ecx <- M[%eax+0]
-LOAD %ecx <- M[%ecx+0]
-pushl %eax
-pushl %ecx
-call %eax
-jmp %ecx
-L14:
+.L11: .string "\n"
+.text
+.globl bsearch
+.type bsearch, @function
+ bsearch:
+pushl %ebp
+movl %esp, %ebp
+addl $-24, %esp
 L17:
-LOAD 195 <- M[%eax+4]
-mov %ecx <- 195
-LOAD %edx <- M[%eax+8]
-LOAD %ecx <- M[%eax+4]
-cmp %ecx, %edx
+movl %edi, %edi
+movl %edi, -8(%ebp)
+movl %esi, %esi
+movl %esi, -12(%ebp)
+movl %ebx, %edi
+movl 12(%ebp), %ebx
+movl %ebx, %ebx
+movl 16(%ebp), %ecx
+movl 12(%ebp), %ebx
+cmp %ecx, %ebx
 je L9
 L10:
-LOAD %edx <- M[%eax+8]
-LOAD %ecx <- M[%eax+4]
-ADD %ecx <- %ecx+%edx
-DIVI %ecx <- %ecx/2
-mov M[%eax+16] <- %ecx
-LOAD %esi <- M[%eax+0]
-LOAD %ecx <- M[%eax+16]
-ADDI %edx <- %ecx+1
-LOAD %ecx <- M[%eax+8]
-LOAD %ebx <- M[%eax+12]
+movl %eax, %ecx
+movl %edx, %edx
+movl 12(%ebp), %eax
+movl 16(%ebp), %ebx
+addl %ebx, %eax
+movl %eax, %eax
+cltd
+movl $2, %ebx
+idivl %ebx
+movl %eax, %ebx
+movl %ecx, %eax
+movl %edx, %edx
+movl %ebx, -4(%ebp)
+movl 8(%ebp), %edx
+movl -4(%ebp), %esi
+movl %esi, %esi
+addl $1, %esi
+movl 16(%ebp), %ecx
+movl 20(%ebp), %ebx
 pushl %ebx
 pushl %ecx
-pushl %edx
 pushl %esi
-call %eax
-mov 107 <- 214
-LOAD %edx <- M[%eax+12]
-LOAD %ebx <- M[%eax+16]
-LOAD %ebx <- M[%ebx+8]
-LOAD %ebx <- M[%ebx+2]
-cmp %ebx, %edx
+pushl %edx
+call bsearch
+movl %eax, %eax
+movl 20(%ebp), %edx
+movl 8(%ebp), %ebx
+movl -8(%ebx), %ecx
+movl -4(%ebp), %ebx
+movl %ebx, %ebx
+imull $4, %ebx
+addl %ebx, %ecx
+movl (%ecx), %ebx
+cmp %edx, %ebx
 jl L7
 L8:
-LOAD %esi <- M[%eax+0]
-LOAD %edx <- M[%eax+4]
-LOAD %ecx <- M[%eax+16]
-LOAD %ebx <- M[%eax+12]
+movl 8(%ebp), %esi
+movl 12(%ebp), %edx
+movl -4(%ebp), %ecx
+movl 20(%ebp), %ebx
 pushl %ebx
 pushl %ecx
 pushl %edx
 pushl %esi
-call %eax
-mov 107 <- %eax
+call bsearch
+movl %eax, %eax
 L7:
-mov %ecx <- 107
+movl %eax, %ebx
 L9:
+movl %edi, %ebx
+movl -12(%ebp), %esi
+movl %esi, %esi
+movl -8(%ebp), %edi
+movl %edi, %edi
 jmp L16
 L16:
+leave
+ret
 
-END function
 
-BEGIN function
-L13:
-mov %ebx <- 16
-mov M[%eax+4] <- %ebx
-ADDI 113 <- %eax+8
-mov %esp <- 113
-LOAD 116 <- M[%eax+4]
-mov %edi <- 116
-MULI 119 <- %edi*4
-mov %ebx <- 119
-pushl %ebx
-call %eax
-mov 101 <- 121
-mov 124 <- 0
-mov %esi <- 124
-mov 125 <- 0
-mov %ebx <- 125
-mov %edx <- 101
-L0:
-cmp %esi, %edi
-jl L1
-L2:
-LOAD %ebx <- M[r0+0]
-mov M[%esp] <- %ebx
-pushl %eax
-call %eax
-jmp %ebx
-L1:
-LOAD %ebx <- M[r0+0]
-mov M[%edx] <- %ebx
-ADDI 142 <- %esi+1
-mov %esi <- 142
-ADDI 145 <- %edx+4
-mov %edx <- 145
-mov %ebx <- 0
-jmp %ebx
-L12:
-L15:
-LOAD %edx <- M[%eax+0]
-pushl %edx
-call %eax
-LOAD %edx <- M[%eax+0]
-LOAD 163 <- M[%edx+0]
-mov %ebx <- 163
-LOAD %edi <- M[%eax+0]
-mov %esp <- 0
-LOAD %edx <- M[%eax+4]
-LOAD %edx <- M[%edx+4]
-SUBI %esi <- %edx-1
-mov %edx <- 7
-pushl %edx
-pushl %esi
-pushl %esp
-pushl %edi
-call %eax
-mov %ecx <- 167
-pushl %ecx
-pushl %ebx
-call %eax
-LOAD %ebx <- M[%eax+0]
-LOAD %ebx <- M[%ebx+0]
-pushl %eax
-pushl %ebx
-call %eax
-jmp %ecx
-L14:
-L17:
-LOAD 195 <- M[%eax+4]
-mov %ecx <- 195
-LOAD %edx <- M[%eax+8]
-LOAD %ecx <- M[%eax+4]
-cmp %ecx, %edx
-je L9
-L10:
-LOAD %edx <- M[%eax+8]
-LOAD %ecx <- M[%eax+4]
-ADD %ecx <- %ecx+%edx
-DIVI %ecx <- %ecx/2
-mov M[%eax+16] <- %ecx
-LOAD %esi <- M[%eax+0]
-LOAD %ecx <- M[%eax+16]
-ADDI %edx <- %ecx+1
-LOAD %ecx <- M[%eax+8]
-LOAD %ebx <- M[%eax+12]
-pushl %ebx
-pushl %ecx
-pushl %edx
-pushl %esi
-call %eax
-mov 107 <- 214
-LOAD %ecx <- M[%eax+12]
-LOAD %ebx <- M[%eax+16]
-LOAD %ebx <- M[%ebx+8]
-LOAD %ebx <- M[%ebx+2]
-cmp %ebx, %ecx
-jl L7
-L8:
-LOAD %esi <- M[%eax+0]
-LOAD %edx <- M[%eax+4]
-LOAD %ecx <- M[%eax+16]
-LOAD %ebx <- M[%eax+12]
-pushl %ebx
-pushl %ecx
-pushl %edx
-pushl %esi
-call %eax
-mov 107 <- %eax
-L7:
-mov %ecx <- 107
-L9:
-jmp %ebx
-L16:
+
+
+.text
+.globl init
+.type init, @function
+ init:
+pushl %ebp
+movl %esp, %ebp
+addl $-20, %esp
 L19:
-mov %ebx <- 0
-mov M[%eax+4] <- %ebx
-LOAD %ebx <- M[%eax+4]
-LOAD %ebx <- M[%ebx+4]
-SUBI %ebx <- %ebx-1
-mov M[%eax+8] <- %ebx
+movl %edi, %edi
+movl %esi, %esi
+movl %ebx, %ebx
+movl $0, %ebx
+movl %ebx, -4(%ebp)
+movl 8(%ebp), %ebx
+movl -4(%ebx), %ebx
+movl %ebx, %ebx
+subl $1, %ebx
+movl %ebx, -8(%ebp)
 L4:
-LOAD %ecx <- M[%eax+8]
-LOAD %ebx <- M[%eax+4]
-cmp %ebx, %ecx
+movl -8(%ebp), %ecx
+movl -4(%ebp), %ebx
+cmp %ecx, %ebx
 jle L5
 L6:
-jmp %ebx
+movl %ebx, %ebx
+movl %esi, %esi
+movl %edi, %edi
+jmp L18
 L5:
-LOAD %ebx <- M[%eax+4]
-MULI %ebx <- %ebx*2
-ADDI %ecx <- %ebx+1
-LOAD %ebx <- M[%eax+8]
-LOAD %ebx <- M[%ebx+8]
-mov M[%ebx+2] <- %ecx
-LOAD %ebx <- M[%eax+0]
+movl -4(%ebp), %ebx
+movl %ebx, %ebx
+imull $2, %ebx
+movl %ebx, %edx
+addl $1, %edx
+movl 8(%ebp), %ebx
+movl -8(%ebx), %ecx
+movl -4(%ebp), %ebx
+movl %ebx, %ebx
+imull $4, %ebx
+addl %ebx, %ecx
+movl %edx, (%ecx)
+movl 8(%ebp), %ebx
 pushl %ebx
-call %eax
-LOAD %ebx <- M[%eax+4]
-ADDI %ebx <- %ebx+1
-mov M[%eax+4] <- %ebx
-mov %ebx <- 0
-jmp %ebx
+call nop
+movl -4(%ebp), %ebx
+movl %ebx, %ebx
+addl $1, %ebx
+movl %ebx, -4(%ebp)
+jmp L4
 L18:
+leave
+ret
 
-END function
 
-BEGIN function
-L13:
-mov %ebx <- 16
-mov M[%eax+4] <- %ebx
-ADDI 113 <- %eax+8
-mov %ebp <- 113
-LOAD 116 <- M[%eax+4]
-mov %esp <- 116
-MULI 119 <- %esp*4
-mov %ebx <- 119
-pushl %ebx
-call %eax
-mov 101 <- 121
-mov 124 <- 0
-mov %edi <- 124
-mov 125 <- 0
-mov %ecx <- 125
-mov %edx <- 101
-L0:
-cmp %edi, %esp
-jl L1
-L2:
-LOAD %ecx <- M[r0+0]
-mov M[%ebp] <- %ecx
-pushl %eax
-call %eax
-jmp %ebx
-L1:
-LOAD %ebx <- M[r0+0]
-mov M[%edx] <- %ebx
-ADDI 142 <- %edi+1
-mov %edi <- 142
-ADDI 145 <- %edx+4
-mov %edx <- 145
-mov %ebx <- 0
-jmp %ebx
-L12:
-L15:
-LOAD %ebx <- M[%eax+0]
-pushl %ebx
-call %eax
-LOAD %ebx <- M[%eax+0]
-LOAD 163 <- M[%ebx+0]
-mov %esp <- 163
-LOAD %edx <- M[%eax+0]
-mov %edi <- 0
-LOAD %ebx <- M[%eax+4]
-LOAD %ebx <- M[%ebx+4]
-SUBI %ecx <- %ebx-1
-mov %ebx <- 7
-pushl %ebx
-pushl %ecx
-pushl %edi
-pushl %edx
-call %eax
-mov %esi <- 167
-pushl %esi
-pushl %esp
-call %eax
-LOAD %ecx <- M[%eax+0]
-LOAD %ecx <- M[%ecx+0]
-pushl %eax
-pushl %ecx
-call %eax
-jmp %ecx
-L14:
-L17:
-LOAD 195 <- M[%eax+4]
-mov %ecx <- 195
-LOAD %edx <- M[%eax+8]
-LOAD %ecx <- M[%eax+4]
-cmp %ecx, %edx
-je L9
-L10:
-LOAD %edx <- M[%eax+8]
-LOAD %ecx <- M[%eax+4]
-ADD %ecx <- %ecx+%edx
-DIVI %ecx <- %ecx/2
-mov M[%eax+16] <- %ecx
-LOAD %ebx <- M[%eax+0]
-LOAD %ecx <- M[%eax+16]
-ADDI %esi <- %ecx+1
-LOAD %edx <- M[%eax+8]
-LOAD %ecx <- M[%eax+12]
-pushl %ecx
-pushl %edx
-pushl %esi
-pushl %ebx
-call %eax
-mov 107 <- 214
-LOAD %ecx <- M[%eax+12]
-LOAD %ebx <- M[%eax+16]
-LOAD %ebx <- M[%ebx+8]
-LOAD %ebx <- M[%ebx+2]
-cmp %ebx, %ecx
-jl L7
-L8:
-LOAD %esi <- M[%eax+0]
-LOAD %edx <- M[%eax+4]
-LOAD %ecx <- M[%eax+16]
-LOAD %ebx <- M[%eax+12]
-pushl %ebx
-pushl %ecx
-pushl %edx
-pushl %esi
-call %eax
-mov 107 <- %eax
-L7:
-mov %ecx <- 107
-L9:
-jmp %ebx
-L16:
-L19:
-mov %ebx <- 0
-mov M[%eax+4] <- %ebx
-LOAD %ebx <- M[%eax+4]
-LOAD %ebx <- M[%ebx+4]
-SUBI %ebx <- %ebx-1
-mov M[%eax+8] <- %ebx
-L4:
-LOAD %ecx <- M[%eax+8]
-LOAD %ebx <- M[%eax+4]
-cmp %ebx, %ecx
-jle L5
-L6:
-jmp %ebx
-L5:
-LOAD %ebx <- M[%eax+4]
-MULI %ebx <- %ebx*2
-ADDI %ecx <- %ebx+1
-LOAD %ebx <- M[%eax+8]
-LOAD %ebx <- M[%ebx+8]
-mov M[%ebx+2] <- %ecx
-LOAD %ebx <- M[%eax+0]
-pushl %ebx
-call %eax
-LOAD %ebx <- M[%eax+4]
-ADDI %ebx <- %ebx+1
-mov M[%eax+4] <- %ebx
-mov %ebx <- 0
-jmp %ebx
-L18:
+
+
+.text
+.globl nop
+.type nop, @function
+ nop:
+pushl %ebp
+movl %esp, %ebp
+addl $-12, %esp
 L21:
-LOAD %ebx <- M[%eax+0]
-LOAD %ebx <- M[%ebx+0]
-pushl %eax
+movl %edi, %edi
+movl %esi, %esi
+movl %ebx, %ebx
+movl 8(%ebp), %ebx
+pushl .L3
 pushl %ebx
-call %eax
+call print
+movl %ebx, %ebx
+movl %esi, %esi
+movl %edi, %edi
 jmp L20
 L20:
+leave
+ret
 
-END function
 
 
+
+.L3: .string ""

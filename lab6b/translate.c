@@ -17,27 +17,6 @@ struct patchList_ {
     patchList tail;
 };
 
-struct Tr_access_ {
-	//Lab5: your code here
-    Tr_level level;
-    F_access access;
-};
-
-
-struct Tr_accessList_ {
-	Tr_access head;
-	Tr_accessList tail;	
-};
-
-
-
-struct Tr_level_ {
-    //Lab5: your code here
-    int levelIndex;
-    F_frame frame;
-    Tr_accessList accessList;
-};
-
 struct Cx
 {
     patchList trues;
@@ -86,25 +65,32 @@ Tr_level Tr_outermost() {
     if(p == NULL) {
         p = checked_malloc(sizeof(*p));
         p->levelIndex = 0;
-        p->frame = F_newFrame(Temp_namedlabel("out most"), NULL);
+        p->frame = F_newFrame(Temp_namedlabel("tigermain"), NULL);
         p->accessList = NULL; 
     }
     return p;
 }
 
 Tr_level Tr_newLevel(Tr_level parent, Temp_label name, U_boolList formals) {
-    // printf("h\n");
     Tr_level p = checked_malloc(sizeof(*p));
     p->levelIndex = parent->levelIndex + 1;
     formals = U_BoolList(TRUE, formals); // add static link
     p->frame = F_newFrame(name, formals); 
+    p->parent = parent;
     p->accessList = NULL;
     //TODO check whether add static link into Tr_accessList
     F_accessList tList = F_formals(p->frame);
-    while(tList != NULL) {
-        p->accessList = Tr_AccessList(Tr_Access(p, tList->head), p->accessList);
-        tList = tList->tail;
+    Tr_accessList accessListHead = NULL, accessListTail = NULL;
+    for(; tList; tList = tList->tail) {
+        if(accessListHead == NULL) {
+            accessListHead = accessListTail = Tr_AccessList(Tr_Access(p, tList->head), NULL);
+        } else {
+            accessListTail->tail = Tr_AccessList(Tr_Access(p, tList->head), NULL);
+            accessListTail = accessListTail->tail;
+        }
+        // p->accessList = Tr_AccessList(Tr_Access(p, tList->head), p->accessList);
     }
+    p->accessList = accessListHead;
     return p;
 }
 
@@ -238,6 +224,7 @@ Tr_exp Tr_simpleVar(Tr_access access, Tr_level currentLevel) {
     int i = targetLevel->levelIndex;
     for(;i < currentLevel->levelIndex; ++i) {
         current = F_Exp(F_formals(currentLevel->frame)->head, current);
+        currentLevel = currentLevel->parent;
     }
     T_exp ex = F_Exp(access->access, current);
     return Tr_Ex(ex);
@@ -355,6 +342,11 @@ F_fragList Tr_getResult() {
 
 Tr_exp Tr_stringExp(string str) {
     Temp_label label = Temp_newlabel();
+    string tlabel = Temp_labelstring(label);
+    char buf[100];
+    sprintf(buf, ".%s", tlabel);
+    printf("-----------------------------------------------------------%s\n", buf);
+    label = Temp_namedlabel(String(buf));
     F_frag strFrag = F_StringFrag(label, str);
     fragList = F_FragList(strFrag, fragList);
     return Tr_Ex(T_Name(label));
@@ -369,20 +361,14 @@ Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp value) {
     T_stm getSize = T_Move(T_Temp(s), unEx(size));  // calculate size, put it into register s
     T_stm getFullSize = T_Move(T_Temp(fullSize), T_Binop(T_mul, T_Temp(s), T_Const(4)));
     T_stm alloc = T_Seq(getSize, 
-                        T_Seq(getFullSize, T_Move(T_Temp(r), 
-                                T_Call(
-                                    T_Name(Temp_namedlabel("mallloc"))
-                                    , T_ExpList(T_Temp(fullSize), NULL)))));
+                        T_Seq(getFullSize, 
+                            T_Seq( T_Exp(T_Call( T_Name(Temp_namedlabel("tMalloc"))
+                                                                        , T_ExpList(T_Temp(fullSize), NULL))),
+                                    T_Move(T_Temp(r), T_Temp(F_RV())))));
     
-    // for (i = 0; i < size;) {
-    //      move(MEM(tmpR), value);
-    //      i = i + 1;
-    //      tmpR = tmpR + 4;
-    // }
-
     Temp_temp i = Temp_newtemp();               // loop i
-    Temp_temp v = Temp_newtemp();               
-    Temp_temp tmpR = Temp_newtemp();
+    Temp_temp v = Temp_newtemp();               // init value
+    Temp_temp tmpR = Temp_newtemp();            // address
     T_stm initLoop = T_Move(T_Temp(i), T_Const(0));
     T_stm getValue = T_Move(T_Temp(v), unEx(value));
     T_stm initR = T_Move(T_Temp(tmpR), T_Temp(r));
@@ -408,7 +394,7 @@ Tr_exp Tr_commbineAllocInitReturn(Tr_exp alloc, Tr_exp init, Tr_exp r) {
 }
 
 Tr_exp Tr_allocMem(Tr_exp r, Tr_exp size) {
-    T_stm alloc = T_Move(unEx(r), F_externalCall("malloc", T_ExpList(unEx(size), NULL)));
+    T_stm alloc = T_Move(unEx(r), F_externalCall("tMalloc", T_ExpList(unEx(size), NULL)));
     return Tr_Nx(alloc);
 }
 
@@ -449,12 +435,15 @@ Tr_exp Tr_callExp(Temp_label name, Tr_level currentLevel, Tr_level funcLevel, T_
     T_exp staticLink = T_Temp(F_FP());
     if(currentLevel->levelIndex >= funcLevel->levelIndex) {
         int index = currentLevel->levelIndex;
-        while(index >= funcLevel->levelIndex) {
-            // printf("here\n");
-            // staticLink = F_Exp(F_formals(currentLevel->frame)->head, staticLink);
-            staticLink = T_Mem(T_Binop(T_plus, staticLink, T_Const(0)));
+        for(; index >= funcLevel->levelIndex; --index) {
+            // outermost do not have static link
+            if(index == funcLevel->levelIndex && index == 0)
+                break;
+            // printf("here %d\n", funcLevel->levelIndex);
+            staticLink = F_Exp(F_formals(currentLevel->frame)->head, staticLink);
+            currentLevel = currentLevel->parent;
+            // staticLink = T_Mem(T_Binop(T_plus, staticLink, T_Const(0)));
             // printf("ok %d\n", index);
-            --index;
         }
     }
     return Tr_Ex(T_Call(T_Name(name), T_ExpList(staticLink, formals)));
@@ -487,5 +476,6 @@ Tr_exp Tr_no_opExp() {
 
 void   Tr_procFrag(Tr_exp body, Tr_level level) {
     // printf("here1111\n");
+    
     fragList = F_FragList(F_ProcFrag(unNx(body), level->frame), fragList);
 }
