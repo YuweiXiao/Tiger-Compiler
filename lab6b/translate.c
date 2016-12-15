@@ -305,8 +305,9 @@ Tr_exp Tr_ifExp(Tr_exp condition, Tr_exp true_exp, Tr_exp false_exp) {
     doPatch(cx.trues, t);
     doPatch(cx.falses, f);
 
+    Temp_labelList final = Temp_LabelList(Temp_newlabel(), NULL);
     if(true_exp->kind == Tr_nx && false_exp->kind == Tr_nx) {
-        Temp_labelList final = Temp_LabelList(Temp_newlabel(), NULL);
+        
         return Tr_Nx(T_Seq(cx.stm,
                     T_Seq(T_Label(t),
                         T_Seq(true_exp->u.nx,
@@ -315,12 +316,14 @@ Tr_exp Tr_ifExp(Tr_exp condition, Tr_exp true_exp, Tr_exp false_exp) {
                                     T_Seq(false_exp->u.nx,
                                         T_Label(final->head))))))));
     }
-    return Tr_Ex(T_Eseq(T_Move(T_Temp(r), unEx(true_exp)), 
-                    T_Eseq(cx.stm,
-                        T_Eseq(T_Label(f),
-                            T_Eseq(T_Move(T_Temp(r), unEx(false_exp)),
-                                T_Eseq(T_Label(t), 
-                                    T_Temp(r)))))));
+    return Tr_Ex(T_Eseq(cx.stm, 
+                    T_Eseq(T_Label(t),
+                        T_Eseq(T_Move(T_Temp(r), unEx(true_exp)),
+                            T_Eseq(T_Jump(T_Const(0), final),
+                                T_Eseq(T_Label(f),
+                                    T_Eseq(T_Move(T_Temp(r), unEx(false_exp)),
+                                        T_Eseq(T_Label(final->head), 
+                                            T_Temp(r)))))))));
 }
 
 
@@ -381,7 +384,8 @@ Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp value) {
                     T_Seq(T_Move(T_Temp(i), T_Binop(T_plus, T_Temp(i), T_Const(1))),
                         T_Move(T_Temp(tmpR), T_Binop(T_plus, T_Temp(tmpR), T_Const(F_wordSize))))); 
 
-    Tr_exp loop = Tr_LoopExp(cx, Tr_Nx(body));
+    Temp_label done = Temp_newlabel();
+    Tr_exp loop = Tr_LoopExp(cx, Tr_Nx(body), done);
     T_stm init = T_Seq(initLoop, T_Seq(getValue, T_Seq(initR, unNx(loop))));
     
     
@@ -396,6 +400,11 @@ Tr_exp Tr_commbineAllocInitReturn(Tr_exp alloc, Tr_exp init, Tr_exp r) {
 Tr_exp Tr_allocMem(Tr_exp r, Tr_exp size) {
     T_stm alloc = T_Move(unEx(r), F_externalCall("tMalloc", T_ExpList(unEx(size), NULL)));
     return Tr_Nx(alloc);
+}
+
+Tr_exp Tr_break(Temp_label done) {
+    T_stm stm = T_Jump(T_Const(0), Temp_LabelList(done, NULL));
+    return Tr_Nx(stm);
 }
 
 Tr_exp Tr_newTemp() {
@@ -413,10 +422,10 @@ Tr_exp Tr_initHeapVariable(Tr_exp temp, int index, Tr_exp value, Tr_exp seq) {
     }
 }
 
-Tr_exp Tr_LoopExp(Tr_exp condition, Tr_exp body) {
+Tr_exp Tr_LoopExp(Tr_exp condition, Tr_exp body, Temp_label done) {
     Temp_label test = Temp_newlabel();
     Temp_label bodyLabel = Temp_newlabel();
-    Temp_label done = Temp_newlabel();
+    // Temp_label done = Temp_newlabel();
     Temp_labelList testLabel = Temp_LabelList(test, NULL);
     // printf("here\n");
     struct Cx cond = unCx(condition);
@@ -446,7 +455,10 @@ Tr_exp Tr_callExp(Temp_label name, Tr_level currentLevel, Tr_level funcLevel, T_
             // printf("ok %d\n", index);
         }
     }
-    return Tr_Ex(T_Call(T_Name(name), T_ExpList(staticLink, formals)));
+    if(funcLevel->levelIndex > 0)
+        return Tr_Ex(T_Call(T_Name(name), T_ExpList(staticLink, formals)));
+    else 
+        return Tr_Ex(T_Call(T_Name(name), formals));
 }
 
 
@@ -476,6 +488,6 @@ Tr_exp Tr_no_opExp() {
 
 void   Tr_procFrag(Tr_exp body, Tr_level level) {
     // printf("here1111\n");
-    
-    fragList = F_FragList(F_ProcFrag(unNx(body), level->frame), fragList);
+    T_stm mov = T_Move(T_Temp(F_RV()), unEx(body));
+    fragList = F_FragList(F_ProcFrag(mov, level->frame), fragList);
 }

@@ -324,3 +324,27 @@ AS_proc F_procEntryExit3(F_frame frame, AS_instrList body) {
 T_exp F_externalCall(string s, T_expList args) {
     return T_Call(T_Name(Temp_namedlabel(s)), args);
 }
+
+
+void F_string(FILE *fp, F_frag frag) {
+    char buf[200];
+    fprintf(fp, "%s: .ascii \"", S_name(frag->u.stringg.label));
+
+    int i = 0;
+    int tSize = strlen(frag->u.stringg.str);
+    string str = frag->u.stringg.str;
+    int size = 0;
+    for(i = 0; i < tSize; ++i) {
+        if(str[i] == '\\') {
+            if(str[i+1] == 'n' || str[i+1] == 't' || str[i+1] == '0' || str[i+1] == '\\') {
+                i++;
+            }
+        }
+        size += 1;
+    }
+    
+    for(i = 0; i < 4; ++i) {
+        fprintf(fp, "%c", (char)( (size >> (i * 8)) & 0xff));
+    }
+    fprintf(fp, "%s\"\n", frag->u.stringg.str);
+}

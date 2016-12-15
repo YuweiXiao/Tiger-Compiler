@@ -105,7 +105,7 @@ exp : lvalueExp {$$ = $1;}                  /* var expression*/
     | arrayExp {$$ = $1;}
     | recordExp {$$ = $1;}
     | assignExp      {$$ = $1;}         /* assignment expression*/
-   /* | BREAK    */                   /* break */
+    | BREAK    {$$ = A_BreakExp(EM_tokPos);}                   /* break */
 
 /* array creation expression*/
 arrayExp : ID LBRACK exp RBRACK OF exp  {$$ = A_ArrayExp(EM_tokPos, S_Symbol($1),$3, $6);}

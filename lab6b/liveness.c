@@ -82,7 +82,7 @@ struct Live_graph Live_liveness(G_graph flow) {
 		// remove <use> from <liveIn> temperaily, so the <def> will not interfere with <use>
 		if(FG_isMove(curNode) == TRUE) {
 			liveIn = subMyTempList(liveIn, use);
-            assert(FG_def(curNode)->tail == NULL && FG_use(curNode)->tail == NULL);
+            // assert(FG_def(curNode)->tail == NULL && FG_use(curNode)->tail == NULL);
 			lg.moves = Live_MoveList(lookupTemp2GnodeTAB(lg.graph, FG_def(curNode)->head),
 									 lookupTemp2GnodeTAB(lg.graph, FG_use(curNode)->head), lg.moves);
 		}

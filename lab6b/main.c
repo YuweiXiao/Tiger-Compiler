@@ -100,7 +100,9 @@ int main(int argc, string *argv)
             else if (frags->head->kind == F_stringFrag) {
                 //TODO  \n, \t these should be treated as \\n , \\t
                 //TODO move the .string format into frame.h  x86frame.c
-                fprintf(out, "%s: .string \"%s\"\n", S_name(frags->head->u.stringg.label), frags->head->u.stringg.str);
+                // fprintf(out, "%s\n", F_string(frags->head));
+                F_string(out, frags->head);
+                // fprintf(out, "%s: .string \"%s\"\n", S_name(frags->head->u.stringg.label), frags->head->u.stringg.str);
             }
         }
         fclose(out);

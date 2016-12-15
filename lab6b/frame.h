@@ -60,6 +60,8 @@ AS_instrList F_procEntryExit2(AS_instrList body); //TODO
 AS_proc F_procEntryExit3(F_frame frame, AS_instrList); //TODO
 
 T_exp F_externalCall(string s, T_expList args);
+void F_string(FILE *out, F_frag);
+
 
 #endif
 

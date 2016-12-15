@@ -34,10 +34,10 @@ digits [0-9]+
   * Below are some examples, which you can wipe out
   * and write reguler expressions and actions of your own.
   */  
-<INITINAL>"/*" {adjust();BEGIN COMMENT;}  // comment
-<COMMENT>"*/" {adjust();BEGIN INITINAL;}  // comment
-<COMMENT>.    {adjust();}
-<COMMENT>"\n"    {adjust();}
+<INITINAL>"/*" {adjust(); BEGIN COMMENT;}  // comment
+<COMMENT>"*/" {adjust(); BEGIN INITINAL;}  // comment
+<COMMENT>.    {fflush(stdout); adjust();}
+<COMMENT>"\n"    {adjust();EM_newline();}
 <INITINAL>for  { adjust(); return FOR;}     /* key word*/
 <INITINAL>while  { adjust(); return WHILE;}
 <INITINAL>to  { adjust(); return TO;}
@@ -85,7 +85,7 @@ digits [0-9]+
   strcpy(yylval.sval, yytext);
   return ID;
 } 
-<INITINAL>"\""([a-zA-Z0-9]|"/"|" "|"\\n"|"."|"_"|"-"|"\\t")*"\"" {// string
+<INITINAL>"\""([a-zA-Z0-9]|"/"|"!"|" "|">"|"\\"|"\\n"|"."|"_"|"-"|"\\t")*"\"" {// string
   adjust(); 
   int size = strlen(yytext), i, p = 0;
   if(size == 2) {

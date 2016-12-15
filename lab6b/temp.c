@@ -219,3 +219,40 @@ My_Temp_TempList subMyTempList(My_Temp_TempList t1, My_Temp_TempList t2) {
     }
     return ret;
 }
+
+
+// make a empty new Temp_labelStack
+My_Temp_LabelStack My_Empty_Temp_LabelStack() {
+    My_Temp_LabelStack list = (My_Temp_LabelStack)checked_malloc(sizeof *list);
+    // list->tail = 
+    list->head = NULL;
+    list->length = 0;
+    return list;  
+}
+
+// push a temp_label in front of label stack.
+void pushMyTempLabelStack(My_Temp_LabelStack stack, Temp_label label) {
+    assert(stack);
+    if(stack->head == NULL) {
+        stack->head = Temp_LabelList(label, NULL);
+        // stack->head = stack->tail = Temp_LabelList(label, NULL);
+    } else {
+        stack->head = Temp_LabelList(label, stack->head);
+    }
+    stack->length += 1;
+}
+// pop the most front temp_label fron labelstack()
+Temp_label popMyTempLabelStack(My_Temp_LabelStack stack) {
+    assert(stack->length != 0);
+    Temp_label label = stack->head->head;
+    stack->head = stack->head->tail;
+    // if(stack->head == NULL) {
+        // stack->tail = NULL;
+    // }
+    stack->length -= 1;
+    return label;
+}
+// get the front temp_label from label stack
+Temp_label getFrontMyTempLabelStack(My_Temp_LabelStack stack) {
+    return stack->head->head;
+}

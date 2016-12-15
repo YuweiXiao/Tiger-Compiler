@@ -65,9 +65,14 @@ static Temp_temp munchExp(T_exp e) {
 		}
 		case T_CALL: {
 			r = F_RV();
-			emit(AS_Oper(String("call `s0\n"), 
-				F_callerSaves(), L(munchExp(e->u.CALL.fun), munchArgs(0, e->u.CALL.args)), NULL));
-			
+			printf("??%d\n", e->u.CALL.fun->kind);
+			assert(e->u.CALL.fun->kind == T_NAME);
+			char buf[100];
+			sprintf(buf, "call %s\n", S_name(e->u.CALL.fun->u.NAME));
+			emit(AS_Oper(String(buf), 
+				F_callerSaves(), munchArgs(0, e->u.CALL.args), NULL));
+			// emit(AS_Oper(String("call `s0\n"), 
+			// 	F_callerSaves(), L(munchExp(e->u.CALL.fun), munchArgs(0, e->u.CALL.args)), NULL));
     		break;
 		}
 		default:
@@ -132,8 +137,10 @@ static Temp_tempList munchArgs(int n,T_expList expList) {
 		return NULL;
 	Temp_temp r = munchExp(expList->head);
 	Temp_tempList remain = munchArgs(n + 1, expList->tail);
-	emit(AS_Oper(String("pushl `s0\n"),
-		NULL, L(r, NULL), NULL));
+	if(expList->head->kind == T_NAME)
+		emit(AS_Oper(String("pushl $`s0\n"), NULL, L(r, NULL), NULL));
+	else 
+		emit(AS_Oper(String("pushl `s0\n"), NULL, L(r, NULL), NULL));
 	return L(r, remain);
 }
 
@@ -206,8 +213,11 @@ static void munchMoveStm(T_stm s) {
 	} else {
 		if(dst->kind == T_TEMP) {
 			// MOVE(reg1, reg2)
-			emit(AS_Move(String("movl `s0, `d0\n"),
-				L(dst->u.TEMP, NULL), L(munchExp(src), NULL)));	
+			
+			if(src->kind == T_NAME)
+				emit(AS_Move(String("movl $`s0, `d0\n"), L(dst->u.TEMP, NULL), L(munchExp(src), NULL)));	
+			else 
+				emit(AS_Move(String("movl `s0, `d0\n"), L(dst->u.TEMP, NULL), L(munchExp(src), NULL)));	
 		} else {
 			printf("error: in munch move: unknown type :src->kind:%d, dst->kind:%d\n", src->kind, dst->kind);
 		}
@@ -283,8 +293,9 @@ static Temp_temp munchOpExp(T_exp e) {
 			emit(AS_Move(String("movl `s0, `d0\n"), L(tEdx, NULL), L(F_DivUP(), NULL)));	
 			emit(AS_Move(String("movl `s0, `d0\n"), L(F_DivLOW(), NULL), 
 				L(munchExp(e->u.BINOP.left), NULL)));	
-			emit(AS_Oper(String("cltd\n"), NULL, NULL, NULL));	
-			emit(AS_Oper(String("idivl `s0\n"), NULL, L(munchExp(e->u.BINOP.right), NULL), NULL));	
+			emit(AS_Oper(String("cltd\n"), L(F_DivUP(), NULL), L(F_DivLOW(), NULL), NULL));	
+			emit(AS_Oper(String("idivl `s0\n"), L(F_DivLOW(), L(F_DivUP(), NULL)), 
+				L(munchExp(e->u.BINOP.right), L(F_DivLOW(), L(F_DivUP(), NULL))), NULL));	
 			emit(AS_Move(String("movl `s0, `d0\n"), L(r, NULL), L(F_DivLOW(), NULL)));	
 			emit(AS_Move(String("movl `s0, `d0\n"), L(F_DivLOW(), NULL), L(tEax, NULL)));	
 			emit(AS_Move(String("movl `s0, `d0\n"), L(F_DivUP(), NULL), L(tEdx, NULL)));	
@@ -310,6 +321,9 @@ static Temp_temp munchOpExp(T_exp e) {
 		sprintf(buf, "%s $%d, `d0\n", instr, e->u.BINOP.right->u.CONST);
 		emit(AS_Oper(String(buf), L(r, NULL), L(r, NULL), NULL));
 	} else {
+		// Temp_temp left = munchExp(e->u.BINOP.left);
+		// Temp_temp right = munchExp(e->u.BINOP.right);
+		// emit(AS_Move(String("movl `s0, `d0\n"), L(r, NULL), L(left, L(right, NULL))));
 		r = munchExp(e->u.BINOP.left);
 		sprintf(buf, "%s `s0, `d0\n", instr);
 		emit(AS_Oper(String(buf), L(r, NULL), L(munchExp(e->u.BINOP.right), L(r, NULL)), NULL));

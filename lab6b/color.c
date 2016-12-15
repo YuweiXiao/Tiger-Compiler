@@ -90,19 +90,32 @@ void COL_assignColors(Temp_tempList regs) {
     //     count++;
     // fprintf(fp, "----------------%d-------------\n", count);
     // fprintf(fp, "%d %s\n", getTempNum(F_FP()), Temp_look(precolored, F_FP()));
+    
     while(emptyMyGnodeList(selectStack) == FALSE) {
         G_node n = popMyGnodeList(selectStack);
         if(isPrecolored(n) == TRUE) {
             assert(0);
         }
-        // fprintf(fp, "reg:%d\n", getTempNum(Live_gtemp(n)));
+        fprintf(fp, "reg:%d\n", getTempNum(Live_gtemp(n)));
         for(i = 0; i < K; ++i) {
             okColor[i] = TRUE;
         }
         G_nodeList adj = G_lookupAdjNodeList(n)->head;
         for(; adj; adj = adj->tail) {
             G_node w = COL_getAlias(adj->head);
-            if(isPrecolored(w) || findInMyGnodeList(coloredNodes, w)) {
+            fprintf(fp, "check - reg:%d - n:%d\n", getTempNum(Live_gtemp(adj->head)), (int)G_look(color, w));
+            if(isPrecolored(w)) {
+                int k = 0;
+                Temp_tempList tRegs = regs;
+                for(; k < K; ++k) {
+                    if(tRegs->head == Live_gtemp(w))
+                        break;
+                    tRegs = tRegs->tail;
+                }
+                if(k < K)
+                    okColor[k] = FALSE;
+            }
+            else if(isPrecolored(w) || findInMyGnodeList(coloredNodes, w)) {
                 okColor[(int)G_look(color, w)] = FALSE;
             }
         }
@@ -180,8 +193,7 @@ void COL_freezeMoves(G_node u) {
         activeMoves = subMyLiveMoveList(activeMoves, 
                             cloneFromLiveMoveList(Live_MoveList(x, y, NULL)));
         checkedAppendMyLiveMoveList(frozenMoves, x, y);
-        if(emptyMyLiveMoveList(COL_nodeMoves(v)) == TRUE &&
-            degree[G_nodeKey(v)] < K) {
+        if(COL_moveRelated(v) == FALSE && degree[G_nodeKey(v)] < K) {
             freezeWorklist =  subMyGnodeList(freezeWorklist, 
                                         cloneFromGnodeList(G_NodeList(v, NULL)));
             // fprintf(fp, "freezemove : reg %d\n", getTempNum(Live_gtemp(v)));
@@ -253,7 +265,10 @@ bool isPrecolored(G_node n) {
 
 G_node COL_getAlias(G_node m) {
     assert(m);
-    return G_look(alias, m);
+    G_node alias_m = G_look(alias, m);
+    if(alias_m == m)
+        return m;
+    return COL_getAlias(alias_m);
 }
 
 void COL_addWorkList(G_node n) {
@@ -299,19 +314,25 @@ bool COL_conservative(G_node u, G_node v) {
 void COL_coalesce() {
     G_node x = worklistMoves->head->src;
     G_node y = worklistMoves->head->dst;
+    popMyLiveMoveList(worklistMoves);
+
+    if(findInMyLiveMoveList(frozenMoves, x, y) == TRUE) {
+        fprintf(fp, "frozen coalescing:%d -> %d\n", getTempNum(Live_gtemp(x)), getTempNum(Live_gtemp(y)));        
+        return;
+    }
 
     fprintf(fp, "coalescing:%d -> %d\n", getTempNum(Live_gtemp(x)), getTempNum(Live_gtemp(y)));
 
     G_node u = COL_getAlias(x);
     G_node v = COL_getAlias(y);
-    popMyLiveMoveList(worklistMoves);
+    
     if(isPrecolored(v) == TRUE) {
         G_node t = u;
         u = v;
         v = t;
     }
 
-    fprintf(fp, "coalescing:%d -> %d\n", getTempNum(Live_gtemp(v)), getTempNum(Live_gtemp(u)));
+    fprintf(fp, "checked precolored.coalescing:%d -> %d\n", getTempNum(Live_gtemp(v)), getTempNum(Live_gtemp(u)));
 
     if(u == v) {
         checkedAppendMyLiveMoveList(coalescedMoves, x, y);
@@ -409,6 +430,7 @@ void COL_makeWorklist() {
         } else if(COL_moveRelated(list->head) == TRUE) {
             checkedAppendMyGnodeList(freezeWorklist, list->head);
         } else {
+            fprintf(fp, "simplify list reg:%d\n", getTempNum(Live_gtemp(list->head)));
             checkedAppendMyGnodeList(simplifyWorklist, list->head);
         }
     }
@@ -467,7 +489,7 @@ void build(struct Live_graph lg) {
         }
         G_enter(alias, list->head, list->head);
         // degree[G_nodeKey(list->head)] = G_degree(list->head);
-        // G_enter(adjList, list->head, cloneFromGnodeList(G_adj(list->head)));
+        G_enter(adjList, list->head, cloneFromGnodeList(G_adj(list->head)));
         // for(; succ; succ = succ->tail)
         //  {
         //     My_G_bitMatrixAdd(adjSet, G_nodeKey(succ->head), G_nodeKey(list->head));
@@ -488,10 +510,10 @@ void build(struct Live_graph lg) {
     Live_moveList tmoveList = lg.moves;
     for(; tmoveList; tmoveList = tmoveList->tail) {
         My_Live_moveList t1 = G_lookupMoveList(tmoveList->src);
-        appendMyLiveMoveList(t1, tmoveList->src, tmoveList->dst);
+        checkedAppendMyLiveMoveList(t1, tmoveList->src, tmoveList->dst);
         // printf("-------------------------------------------%d\n", t1->length);
-        My_Live_moveList t2 = G_lookupMoveList(tmoveList->src);
-        appendMyLiveMoveList(t2, tmoveList->src, tmoveList->dst);
+        My_Live_moveList t2 = G_lookupMoveList(tmoveList->dst);
+        checkedAppendMyLiveMoveList(t2, tmoveList->src, tmoveList->dst);
         // printf("-------------------------------------------%d\n", t2->length);
     }
 }

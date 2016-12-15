@@ -131,7 +131,7 @@ struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
     if(out == NULL)
         out = fopen("my.txt", "w");
     // G_show(out, G_nodes(flowGraph), NULL);
-    // fprintf(out, "---------------------------------------------\n");
+    fprintf(out, "---------------------------------------------\n");
     assert(flowGraph);
     struct Live_graph lg = Live_liveness(flowGraph);
 

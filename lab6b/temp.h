@@ -56,4 +56,23 @@ void Temp_dumpMap(FILE *out, Temp_map m);
 
 Temp_map Temp_name(void);
 
+
+typedef struct My_Temp_LabelStack_ *My_Temp_LabelStack;
+struct My_Temp_LabelStack_ {
+    int length;
+    Temp_labelList head;
+    // Temp_labelList tail;
+};
+
+// make a empty new Temp_labelStack
+My_Temp_LabelStack My_Empty_Temp_LabelStack();
+// push a temp_label in front of label stack.
+void pushMyTempLabelStack(My_Temp_LabelStack, Temp_label);
+// pop the most front temp_label fron labelstack()
+Temp_label popMyTempLabelStack(My_Temp_LabelStack);
+// get the front temp_label from label stack
+Temp_label getFrontMyTempLabelStack(My_Temp_LabelStack);
+
+
+
 #endif

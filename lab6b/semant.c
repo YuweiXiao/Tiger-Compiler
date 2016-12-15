@@ -9,11 +9,14 @@
 #include "frame.h"
 #include "semant.h"
 
+My_Temp_LabelStack labelStack = NULL;
+
 /*Lab4: Your implementation of lab4*/
 F_fragList SEM_transProg(A_exp exp){
     // printf("start transProg\n");
     S_table venv = E_base_venv();
     S_table tenv = E_base_tenv();
+    labelStack = My_Empty_Temp_LabelStack();
     struct expty e = transExp(venv, tenv, exp, Tr_outermost());
     Tr_procFrag(e.exp, Tr_outermost()); 
     return Tr_getResult();
@@ -272,6 +275,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
             return transIfExp(venv, tenv, a, level);
         case A_whileExp: {
             // printf("in while %d\n", a->u.whilee.test->kind);
+            Temp_label done = Temp_newlabel();
+            pushMyTempLabelStack(labelStack, done);
             tExpty = transExp(venv, tenv, a->u.whilee.test, level);
           // if(tExpty.ty->kind != Ty_int) {
           //   EM_error(a->pos, "while loop test should be integer expression.");
@@ -281,9 +286,13 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
             if(right.ty != Ty_Void()) {
                 EM_error(a->pos, "while body must produce no value");
             }
-            return expTy(Tr_LoopExp(tExpty.exp, right.exp), Ty_Void());
+            
+            Tr_exp e = Tr_LoopExp(tExpty.exp, right.exp, done);
+            popMyTempLabelStack(labelStack);
+            return expTy(e, Ty_Void());
         }
         case A_forExp:
+            assert(0); // transform for loop to while loop in tiger.y, so should be here.
             printf("should not in for. for is translate to while\n");
             left = transExp(venv, tenv, a->u.forr.lo, level);
             right = transExp(venv, tenv, a->u.forr.hi, level);
@@ -297,7 +306,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
             S_endScope(venv);
             return tExpty;
         case A_breakExp:
-            return expTy(NULL, Ty_Void());
+            return expTy(Tr_break(getFrontMyTempLabelStack(labelStack)), Ty_Void());
         case A_letExp: {
             //printf("in let exp\n");
             S_beginScope(venv);
