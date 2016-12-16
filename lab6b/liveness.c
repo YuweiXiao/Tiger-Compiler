@@ -62,7 +62,16 @@ struct Live_graph Live_liveness(G_graph flow) {
     temp2GnodeTable = TAB_empty();
 	// nodes tobe update, like a queue.
 	My_G_nodeList edgeNodes =  cloneFromGnodeList(G_nodes(flow));
-		
+	
+    G_nodeList tNodeList = G_nodes(flow);
+    for(; tNodeList; tNodeList = tNodeList->tail) {
+        My_G_nodeList t = cloneFromGnodeList(G_succ(tNodeList->head));
+        if(emptyMyGnodeList(t) == TRUE) {
+            printf("--------------------------------------------------12312312312--------------\n");
+            enterLiveMap(liveOutMap, tNodeList->head, cloneFromTempList(F_calleeSaves()));
+        } 
+    }
+
 	
 	struct Live_graph lg = {G_Graph(), NULL};
 	Temp_tempList tmp;

@@ -125,17 +125,31 @@ void showflow(void* t) {
     fprintf(out, "instr:%s:", s);
 }
 
+FILE *instrOut = NULL;
+
 struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
     G_graph flowGraph = FG_AssemFlowGraph(il, f);
 
     if(out == NULL)
         out = fopen("my.txt", "w");
+    if(instrOut == NULL)
+        instrOut = fopen("my-instr.txt", "w");
+
+    fprintf(instrOut, "----------------------%s-----------------------\n", S_name(F_name(f)));
+    fprintf(instrOut, "------------------------------\n");
+    Temp_dumpMap(instrOut, F_preColored());
+    fprintf(instrOut, "------------------------------\n");
+    AS_printInstrList(instrOut, il, Temp_layerMap(F_tempMap, Temp_name()));
+    fprintf(instrOut, "--------------------------------!@#!@#!@#\n");
+
     // G_show(out, G_nodes(flowGraph), NULL);
-    fprintf(out, "---------------------------------------------\n");
     assert(flowGraph);
     struct Live_graph lg = Live_liveness(flowGraph);
 
-    G_show(out, G_nodes(lg.graph), show);
+    if(strcmp(S_name(F_name(f)), "isdigit") == 0) {
+        fprintf(out, "----------------------%s-----------------------\n", S_name(F_name(f)));
+        G_show(out, G_nodes(lg.graph), show);
+    }
 
     Temp_map initial = Temp_layerMap(F_tempMap, F_preColored());
     Temp_tempList regs = F_registers();

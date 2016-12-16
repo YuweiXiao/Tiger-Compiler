@@ -42,7 +42,7 @@ Tr_exp Tr_seqExp(Tr_exp, Tr_exp);
 Tr_exp Tr_stringExp(string str);
 Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp init);
 Tr_exp Tr_commbineAllocInitReturn(Tr_exp alloc, Tr_exp, Tr_exp);
-Tr_exp Tr_allocMem(Tr_exp r, Tr_exp size);
+Tr_exp Tr_allocMem(Tr_exp r, int size);
 Tr_exp Tr_initVariable();
 Tr_exp Tr_initHeapVariable(Tr_exp temp, int index, Tr_exp value, Tr_exp seq);
 Tr_exp Tr_newTemp();
@@ -52,6 +52,7 @@ Tr_exp Tr_callExp(Temp_label, Tr_level, Tr_level, T_expList);
 T_expList Tr_addExpIntoList(T_expList, Tr_exp);
 void   Tr_procFrag(Tr_exp body, Tr_level level);
 Tr_exp Tr_no_opExp();
+Tr_exp Tr_nilExp();
 
 void Tr_procEntryExit(Tr_level level, Tr_exp body, Tr_accessList formals);
 F_fragList Tr_getResult();

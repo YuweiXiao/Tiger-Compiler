@@ -219,10 +219,12 @@ static struct Cx unCx(Tr_exp e) {
 
 
 Tr_exp Tr_simpleVar(Tr_access access, Tr_level currentLevel) {
+    printf("-------------- - accesslevel:%d , currentLevel:%d\n", access->level->levelIndex, currentLevel->levelIndex);
     Tr_level targetLevel = access->level;
     T_exp current = T_Temp(F_FP());
     int i = targetLevel->levelIndex;
-    for(;i < currentLevel->levelIndex; ++i) {
+    int n = currentLevel->levelIndex;
+    for(;i < n; ++i) {
         current = F_Exp(F_formals(currentLevel->frame)->head, current);
         currentLevel = currentLevel->parent;
     }
@@ -397,8 +399,9 @@ Tr_exp Tr_commbineAllocInitReturn(Tr_exp alloc, Tr_exp init, Tr_exp r) {
     return Tr_Ex(T_Eseq(T_Seq(unNx(alloc), unNx(init)), unEx(r)));
 }
 
-Tr_exp Tr_allocMem(Tr_exp r, Tr_exp size) {
-    T_stm alloc = T_Move(unEx(r), F_externalCall("tMalloc", T_ExpList(unEx(size), NULL)));
+Tr_exp Tr_allocMem(Tr_exp r, int size) {
+    T_stm alloc = T_Move(unEx(r), F_externalCall("allocRecord", T_ExpList(T_Const(size*F_wordSize), NULL)));
+    // T_stm alloc = T_Move(unEx(r), F_externalCall("tMalloc", T_ExpList(unEx(size), NULL)));
     return Tr_Nx(alloc);
 }
 
@@ -441,6 +444,7 @@ Tr_exp Tr_LoopExp(Tr_exp condition, Tr_exp body, Temp_label done) {
 
 
 Tr_exp Tr_callExp(Temp_label name, Tr_level currentLevel, Tr_level funcLevel, T_expList formals) {
+    printf("------------------------------------%s - current:%d   funcLevel:%d\n", S_name(name), currentLevel->levelIndex, funcLevel->levelIndex);
     T_exp staticLink = T_Temp(F_FP());
     if(currentLevel->levelIndex >= funcLevel->levelIndex) {
         int index = currentLevel->levelIndex;
@@ -483,6 +487,18 @@ Tr_exp Tr_initVariable(Tr_access access, Tr_exp exp) {
 
 Tr_exp Tr_no_opExp() {
     return Tr_Ex(T_Const(0));
+}
+
+Tr_exp Tr_nilExp() {
+    // static Temp_temp t = NULL;
+    // if(t!=NULL) {
+    //     return Tr_Ex(T_Temp(t));
+    // } else {
+    //     t = Temp_newtemp();
+    //     T_stm alloc = T_Move(T_Temp(t),
+    //                    F_externalCall(String("allocRecord"),T_ExpList(T_Const(4),NULL)));
+    //     return Tr_Ex(T_Eseq(alloc, T_Temp(t)));
+    // }
 }
 
 

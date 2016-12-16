@@ -100,25 +100,41 @@ static void munchStm(T_stm s) {
 			break;
 		} 
 		case T_CJUMP: {
-			emit(AS_Oper(String("cmp `s1, `s0\n"), 
-				NULL, L(munchExp(s->u.CJUMP.left), L(munchExp(s->u.CJUMP.right), NULL)), NULL));
 			string jump;
-			switch(s->u.CJUMP.op) {
-				case T_eq:
-					jump = "je `j0\n"; break;
-				case T_ne:
-					jump = "jne `j0\n"; break;
-				case T_lt: 
-					jump = "jl `j0\n"; break;
-				case T_gt: 
-					jump = "jg `j0\n"; break;
-				case T_le: 
-					jump = "jle `j0\n"; break;
-				case T_ge:
-					jump = "jge `j0\n"; break;
-				default:
-					printf("error in munchStm, T_CJUMP, not match op : op kind :%d\n", s->u.CJUMP.op);
-					assert(0);
+			if(s->u.CJUMP.left->kind == T_NAME || s->u.CJUMP.right->kind == T_NAME) {
+				if(s->u.CJUMP.left->kind == T_NAME) {
+					emit(AS_Oper(String("pushl `s0\n"), NULL, L(munchExp(s->u.CJUMP.right), NULL), NULL));
+					emit(AS_Oper(String("pushl $`s0\n"), NULL, L(munchExp(s->u.CJUMP.left), NULL), NULL));
+				} else {
+					emit(AS_Oper(String("pushl `s0\n"), NULL, L(munchExp(s->u.CJUMP.left), NULL), NULL));
+					emit(AS_Oper(String("pushl $`s0\n"), NULL, L(munchExp(s->u.CJUMP.right), NULL), NULL));
+				}
+				emit(AS_Oper(String("call stringEqual\n"), NULL, NULL, NULL));
+				Temp_temp r = Temp_newtemp();
+				emit(AS_Oper(String("movl $1, `d0\n"), L(r, NULL), NULL, NULL));
+				emit(AS_Oper(String("cmp `s1, `s0\n"), NULL, L(F_RV(), L(r, NULL)), NULL));
+				jump = "je `j0\n";
+			}
+			else {
+				emit(AS_Oper(String("cmp `s1, `s0\n"), 
+					NULL, L(munchExp(s->u.CJUMP.left), L(munchExp(s->u.CJUMP.right), NULL)), NULL));
+				switch(s->u.CJUMP.op) {
+					case T_eq:
+						jump = "je `j0\n"; break;
+					case T_ne:
+						jump = "jne `j0\n"; break;
+					case T_lt: 
+						jump = "jl `j0\n"; break;
+					case T_gt: 
+						jump = "jg `j0\n"; break;
+					case T_le: 
+						jump = "jle `j0\n"; break;
+					case T_ge:
+						jump = "jge `j0\n"; break;
+					default:
+						printf("error in munchStm, T_CJUMP, not match op : op kind :%d\n", s->u.CJUMP.op);
+						assert(0);
+				}
 			}
 			emit(AS_Oper(String(jump), NULL, NULL, AS_Targets(Temp_LabelList(s->u.CJUMP.true, NULL))));
 			break;

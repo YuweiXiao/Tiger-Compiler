@@ -172,7 +172,8 @@ struct expty transIfExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
 }
 
 struct expty transRecordExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
-    Ty_fieldList ty_fieldList = NULL;
+    Ty_fieldList ty_fieldListHead = NULL;
+    Ty_fieldList ty_fieldListTail = NULL;
     E_enventry e_enventry = S_look(tenv, a->u.record.typ);
     // the type not exist 
     // or the type is not a variable type
@@ -180,11 +181,19 @@ struct expty transRecordExp(S_table venv, S_table tenv, A_exp a, Tr_level level)
     if(e_enventry == NULL || e_enventry->kind != E_varEntry || e_enventry->u.var.ty->kind != Ty_record) {
         EM_error(a->pos, "undefined type %s", S_name(a->u.record.typ));
     } else {
+        int size = 0;
+        // Ty_fieldList tList = e_enventry->u.var.ty->u.record;
+        // while(tList)
+            // size += 1;
+
+        // Tr_exp alloc = Tr_newFieldVar(size);
+
         // loop over the record expression field
         A_efieldList efieldList = a->u.record.fields;
         Tr_exp r = Tr_newTemp();
+        // Tr_exp r = alloc;
         Tr_exp init = NULL;
-        int size = 0;
+        
         for(; efieldList != NULL; efieldList = efieldList->tail) {
             A_efield field = efieldList->head;                          // get current field
             struct expty tExpty = transExp(venv, tenv, field->exp, level);     // the field value type
@@ -212,13 +221,19 @@ struct expty transRecordExp(S_table venv, S_table tenv, A_exp a, Tr_level level)
                 break;
             }
             ++size;
-            ty_fieldList = Ty_FieldList(Ty_Field(field->name, tExpty.ty), ty_fieldList);
+            if(ty_fieldListHead == NULL) {
+                ty_fieldListHead = ty_fieldListTail = 
+                        Ty_FieldList(Ty_Field(field->name, tExpty.ty), NULL);
+            } else {
+                ty_fieldListTail->tail = Ty_FieldList(Ty_Field(field->name, tExpty.ty), NULL);
+                ty_fieldListTail = ty_fieldListTail->tail;
+            }
         }
-        Tr_exp alloc = Tr_allocMem(r, Tr_intExp(size));
-        return expTy(Tr_commbineAllocInitReturn(alloc, init, r), Ty_Record(ty_fieldList));
+        Tr_exp alloc = Tr_allocMem(r, size);
+        return expTy(Tr_commbineAllocInitReturn(alloc, init, r), Ty_Record(ty_fieldListHead));
     }
     
-    return expTy(Tr_no_opExp(), Ty_Record(ty_fieldList));
+    return expTy(Tr_no_opExp(), Ty_Record(ty_fieldListHead));
 }
 
 struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level) {
@@ -365,6 +380,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v, Tr_level level) {
             if(e_enventry->kind == E_funEntry) {
                 EM_error(v->pos, "var should not be func");
             }
+            printf("---------------------------------transvar:%s\n", S_name(v->u.simple));
             return expTy(Tr_simpleVar(e_enventry->u.var.access, level), e_enventry->u.var.ty);
         }
         case A_fieldVar:
@@ -571,7 +587,8 @@ Ty_ty transTy (S_table tenv, A_ty a) {
         case A_recordTy: {
             // printf("record type\n");
             A_fieldList fieldlist = a->u.record;
-            Ty_fieldList ty_fieldList = NULL;
+            Ty_fieldList ty_fieldListHead = NULL;
+            Ty_fieldList ty_fieldListTail = NULL;
             for(; fieldlist != NULL; fieldlist = fieldlist->tail) {
                 A_field field = fieldlist->head;
                 e_enventry = S_look(tenv, field->typ);
@@ -580,9 +597,15 @@ Ty_ty transTy (S_table tenv, A_ty a) {
                     break;
                 }
                 // printf("name:%s  type:%d\n", S_name(field->name), e_enventry->u.var.ty->kind);
-                ty_fieldList = Ty_FieldList(Ty_Field(field->name, e_enventry->u.var.ty), ty_fieldList);
+                if(ty_fieldListHead == NULL) {
+                    ty_fieldListHead = Ty_FieldList(Ty_Field(field->name, e_enventry->u.var.ty), NULL);
+                    ty_fieldListTail = ty_fieldListHead;
+                } else {
+                    ty_fieldListTail->tail = Ty_FieldList(Ty_Field(field->name, e_enventry->u.var.ty), NULL);
+                    ty_fieldListTail = ty_fieldListTail->tail;
+                }
             }
-            return Ty_Record(ty_fieldList);
+            return Ty_Record(ty_fieldListHead);
         }
         case A_arrayTy: {
             e_enventry = S_look(tenv, a->u.array);
