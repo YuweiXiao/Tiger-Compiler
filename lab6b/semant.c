@@ -531,7 +531,10 @@ Tr_exp transDec(S_table venv, S_table tenv, A_dec d, Tr_level level) {
                     EM_error(d->pos, "init should not be nil without type specified");
                 }
             }
-            Tr_access access = Tr_allocLocal(level, TRUE);
+            if(d->u.var.escape == FALSE) {
+                printf("----------------------------------false---------%s\n", S_name(d->u.var.var));
+            }
+            Tr_access access = Tr_allocLocal(level, d->u.var.escape);
             S_enter(venv, d->u.var.var, E_VarEntry(access, tExpty.ty));
             return Tr_initVariable(access, tExpty.exp);
         case A_typeDec: {

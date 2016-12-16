@@ -139,7 +139,9 @@ assignExp : lvalue ASSIGN exp {$$ = A_AssignExp(EM_tokPos, $1, $3);}
 /* while loop expression*/
 loopExp : FOR ID ASSIGN exp TO exp DO exp {
             S_symbol i_symbol = S_Symbol($2);
-            S_symbol limit_symbol = S_Symbol("limit");
+            char buf[100];
+            sprintf(buf, "limit_%s", $2);
+            S_symbol limit_symbol = S_Symbol(String(buf));
             A_var i = A_SimpleVar(EM_tokPos, i_symbol);
             A_var limit = A_SimpleVar(EM_tokPos, limit_symbol);
             A_decList declist = A_DecList( A_VarDec(EM_tokPos, i_symbol, S_Symbol("int"), $4),
