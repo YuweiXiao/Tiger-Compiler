@@ -359,39 +359,51 @@ Tr_exp Tr_stringExp(string str) {
 
 
 Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp value) {
-    // alloc space for array, register r is array address
     Temp_temp r = Temp_newtemp();
     Temp_temp s = Temp_newtemp(); 
-    Temp_temp fullSize = Temp_newtemp();
-    T_stm getSize = T_Move(T_Temp(s), unEx(size));  // calculate size, put it into register s
-    T_stm getFullSize = T_Move(T_Temp(fullSize), T_Binop(T_mul, T_Temp(s), T_Const(4)));
-    T_stm alloc = T_Seq(getSize, 
-                        T_Seq(getFullSize, 
-                            T_Seq( T_Exp(T_Call( T_Name(Temp_namedlabel("tMalloc"))
-                                                                        , T_ExpList(T_Temp(fullSize), NULL))),
-                                    T_Move(T_Temp(r), T_Temp(F_RV())))));
-    
-    Temp_temp i = Temp_newtemp();               // loop i
     Temp_temp v = Temp_newtemp();               // init value
-    Temp_temp tmpR = Temp_newtemp();            // address
-    T_stm initLoop = T_Move(T_Temp(i), T_Const(0));
-    T_stm getValue = T_Move(T_Temp(v), unEx(value));
-    T_stm initR = T_Move(T_Temp(tmpR), T_Temp(r));
+    
+    T_stm getSize = T_Move(T_Temp(s), unEx(size));  // calculate size, put it into register s
+    T_stm getInit = T_Move(T_Temp(v), unEx(value));  // calculate size, put it into register s
+    
+    T_stm alloc = T_Seq(getSize, 
+                    T_Seq(getInit,
+                        T_Move(T_Temp(r), 
+                            F_externalCall("initArray", T_ExpList(T_Temp(s), T_ExpList(T_Temp(v), NULL))))));
 
-    T_stm initTest = T_Cjump(T_lt, T_Temp(i), T_Temp(s), NULL, NULL);
-    Tr_exp cx = Tr_Cx(PatchList(&initTest->u.CJUMP.true, NULL), PatchList(&initTest->u.CJUMP.false, NULL), initTest);
+    return Tr_Ex(T_Eseq(alloc, T_Temp(r)));
+    // alloc space for array, register r is array address
+    // Temp_temp r = Temp_newtemp();
+    // Temp_temp s = Temp_newtemp(); 
+    // Temp_temp fullSize = Temp_newtemp();
+    // T_stm getSize = T_Move(T_Temp(s), unEx(size));  // calculate size, put it into register s
+    // T_stm getFullSize = T_Move(T_Temp(fullSize), T_Binop(T_mul, T_Temp(s), T_Const(4)));
+    // T_stm alloc = T_Seq(getSize, 
+    //                     T_Seq(getFullSize, 
+    //                         T_Seq( T_Exp(T_Call( T_Name(Temp_namedlabel("tMalloc"))
+    //                                                                     , T_ExpList(T_Temp(fullSize), NULL))),
+    //                                 T_Move(T_Temp(r), T_Temp(F_RV())))));
+    
+    // Temp_temp i = Temp_newtemp();               // loop i
+    // Temp_temp v = Temp_newtemp();               // init value
+    // Temp_temp tmpR = Temp_newtemp();            // address
+    // T_stm initLoop = T_Move(T_Temp(i), T_Const(0));
+    // T_stm getValue = T_Move(T_Temp(v), unEx(value));
+    // T_stm initR = T_Move(T_Temp(tmpR), T_Temp(r));
+
+    // T_stm initTest = T_Cjump(T_lt, T_Temp(i), T_Temp(s), NULL, NULL);
+    // Tr_exp cx = Tr_Cx(PatchList(&initTest->u.CJUMP.true, NULL), PatchList(&initTest->u.CJUMP.false, NULL), initTest);
 
     
-    T_stm body = T_Seq(T_Move(T_Mem(T_Temp(tmpR)), T_Temp(v)),
-                    T_Seq(T_Move(T_Temp(i), T_Binop(T_plus, T_Temp(i), T_Const(1))),
-                        T_Move(T_Temp(tmpR), T_Binop(T_plus, T_Temp(tmpR), T_Const(F_wordSize))))); 
+    // T_stm body = T_Seq(T_Move(T_Mem(T_Temp(tmpR)), T_Temp(v)),
+    //                 T_Seq(T_Move(T_Temp(i), T_Binop(T_plus, T_Temp(i), T_Const(1))),
+    //                     T_Move(T_Temp(tmpR), T_Binop(T_plus, T_Temp(tmpR), T_Const(F_wordSize))))); 
 
-    Temp_label done = Temp_newlabel();
-    Tr_exp loop = Tr_LoopExp(cx, Tr_Nx(body), done);
-    T_stm init = T_Seq(initLoop, T_Seq(getValue, T_Seq(initR, unNx(loop))));
+    // Temp_label done = Temp_newlabel();
+    // Tr_exp loop = Tr_LoopExp(cx, Tr_Nx(body), done);
+    // T_stm init = T_Seq(initLoop, T_Seq(getValue, T_Seq(initR, unNx(loop))));
     
-    
-    return Tr_Ex(T_Eseq(T_Seq(alloc, init), T_Temp(r)));
+    // return Tr_Ex(T_Eseq(T_Seq(alloc, init), T_Temp(r)));
 }
 
 

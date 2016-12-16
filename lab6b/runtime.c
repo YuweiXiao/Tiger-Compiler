@@ -3,10 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-int *tMalloc(int size) {
-  void *a  = malloc(sizeof(int) * size);
-  return a;
-}
 
 int *initArray(int size, int init)
 {int i;
