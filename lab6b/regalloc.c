@@ -166,7 +166,7 @@ struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
         // printf("rewrite complete\n");
         return RA_regAlloc(f, il);
     }  
-    // removeUselessMoves(il, colorResult.coloring);
+    removeUselessMoves(il, colorResult.coloring);
     struct RA_result ret = {colorResult.coloring, il};
 	return ret;
 }
